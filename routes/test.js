@@ -4,19 +4,26 @@ var request = require('request');
 
 router.post('/', function (req, res, next) {
 
-  console.log(req.body.address);
-
   data = {
-    senderId: "3157131511699993997L"
-  }
+    senderId: req.body.address,
+    limit: "100"
+  };
 
-  request.post("https://login.lisk.io/api/transactions", data, function (error, response, body) {
-    if (!error) {
-      console.log(body) // Show the HTML for the Google homepage. 
+  request.get({
+    url: "https://login.lisk.io/api/transactions",
+    qs: data,
+    json: true
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      if (body.success) {
+        res.send(body);
+      } else {
+        res.send("API error.");
+      }
     } else {
-      console.log(error);
+      res.send(error);
     }
-  })
+  });
 });
 
 module.exports = router;
