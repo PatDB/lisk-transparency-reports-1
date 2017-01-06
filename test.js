@@ -1,6 +1,6 @@
-var module = require('helpers/transactions');
+var blockchain = require('helpers/blockchain');
 
-module.getOuterTx("9120485202270553493L", function (err, data) {
+blockchain.getOuterTx("9120485202270553493L", function (err, data) {
     if (err) {
         return(err);
     } else {
