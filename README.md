@@ -3,8 +3,8 @@
 This automated tool allow Lisk delegates to manage (very) easily their transparency reports, and voters to access the data efficiently.
 
 ## Links
-[Project Management](https://tree.taiga.io/project/sherlockstd-lisk-transparency-reports-system)  
-[Lisk Forum Post](https://forum.lisk.io/viewtopic.php?f=25&t=1347)
+- [Project Management](https://tree.taiga.io/project/sherlockstd-lisk-transparency-reports-system)  
+- [Lisk Forum Post](https://forum.lisk.io/viewtopic.php?f=25&t=1347)
 
 ## Installation
 
