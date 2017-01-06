@@ -1,4 +1,5 @@
 var request = require('request');
+var api = require('../config').api;
 
 /**
  * Return outer transactions [{id, recipientId, amount}] for a given address 
@@ -16,7 +17,7 @@ var getOuterTx = function (address, callback) {
     };
 
     request.get({
-        url: "https://login.lisk.io/api/transactions",
+        url: api + "transactions",
         qs: data,
         json: true
     }, function (err, res, body) {
@@ -54,7 +55,7 @@ var getBalance = function (address, callback) {
     };
 
     request.get({
-        url: "https://login.lisk.io//api/accounts/getBalance",
+        url: api + "accounts/getBalance",
         qs: data,
         json: true
     }, function (err, res, body) {
