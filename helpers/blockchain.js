@@ -39,6 +39,38 @@ var getOuterTx = function (address, callback) {
     });
 };
 
+/**
+ * Return balance for a given address 
+ *
+ * @param    {String} address
+ * @callback {Number}
+ */
+var getBalance = function (address, callback) {
+
+    result = [];
+
+    data = {
+        address: address
+    };
+
+    request.get({
+        url: "https://login.lisk.io//api/accounts/getBalance",
+        qs: data,
+        json: true
+    }, function (err, res, body) {
+        if (!err && res.statusCode == 200) {
+            if (body.success) {
+                callback(null, body.balance);
+            } else {
+                callback(new Error("API returned success = false !"));
+            }
+        } else {
+            callback(new Error("Error contacting API !"));
+        }
+    });
+};
+
 module.exports = {
-    getOuterTx: getOuterTx
+    getOuterTx: getOuterTx,
+    getBalance: getBalance
 };
