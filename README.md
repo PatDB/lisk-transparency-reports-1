@@ -1,7 +1,10 @@
 # Lisk Transparency Report Tool
 
-This tool allow Lisk delegates to manage (very) easily their transparency reports, and voters to access the data efficiently.
+This automated tool allow Lisk delegates to manage (very) easily their transparency reports, and voters to access the data efficiently.
 
+## Links
+[Project Management](https://tree.taiga.io/project/sherlockstd-lisk-transparency-reports-system)  
+[Lisk Forum Post](https://forum.lisk.io/viewtopic.php?f=25&t=1347)
 
 ## Installation
 
@@ -14,7 +17,7 @@ npm install
 
 ## Configuration
 
-The configuration will be stored in config.js file.
+The configuration is stored in the /config.js file.
 
 
 ## Launch
