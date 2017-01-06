@@ -1,15 +1,27 @@
 # Lisk Transparency Report Tool
 
-This tool allow Lisk delegates to manage (very) easily their transparency reports.
+This tool allow Lisk delegates to manage (very) easily their transparency reports, and voters to access the data efficiently.
 
 
 ## Installation
 
+```bash
+git clone https://github.com/SherlockStd/lisk-transparency-reports.git
+cd lisk-transparency-reports
+npm install
+```
+
 
 ## Configuration
 
+The configuration will be stored in config.js file.
+
 
 ## Launch
+
+```bash
+npm start
+```
 
 
 ## Authors
