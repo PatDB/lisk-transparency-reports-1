@@ -29,7 +29,7 @@ npm start
 
 ## Authors
 
-- Pierre Cavin <contact@sherlockstd.io>
+- Pierre Cavin <sherlock@sherlockstd.io>
 - Remo Bonfante <anamixlisk@libero.it>
 
 
