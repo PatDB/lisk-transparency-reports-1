@@ -51,32 +51,20 @@ var getTxFromTo = function (senderId, recipientId, callback) {
 
     var result = [];
 
-    data = {
-        senderId: senderId,
-        recipientId: recipientId,
-        limit: "100"
-    };
-
-    request.get({
-        url: api + "/transactions",
-        qs: data,
-        json: true
-    }, function (err, res, body) {
-        if (!err && res.statusCode == 200) {
-            if (body.success) {
-                body.transactions.forEach(function (tx) {
+    getOutTx(senderId, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            data.forEach(function (tx) {
+                if (tx.recipientId == recipientId) {
                     result.push({
-                        txId: tx.id,
+                        txId: tx.txId,
                         amount: tx.amount
                     });
-                }, this);
-                callback(null, result);
-            } else {
-                callback(new Error("API returned success = false !"));
-            }
-        } else {
-            callback(new Error("Error contacting API !"));
+                }
+            }, this);
         }
+        callback(null, result);
     });
 };
 
