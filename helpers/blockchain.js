@@ -1,11 +1,44 @@
 var request = require('request');
 var api = require('../config').api;
 
+
 /**
- * Return outward transactions [{id, recipientId, amount}] for a given address 
+ * Return account details for a given address
+ * https://lisk.io/documentation?i=lisk-docs/APIReference#get-account
+ *
+ * @param    {String} address
+ * @callback {Object}
+ */
+var getAccount = function (address, callback) {
+
+    data = {
+        address: address
+    };
+
+    request.get({
+        url: api + "/accounts",
+        qs: data,
+        json: true
+    }, function (err, res, body) {
+        if (!err && res.statusCode == 200) {
+            if (body.success) {
+                callback(null, body.account);
+            } else {
+                callback(new Error("API returned success = false !"));
+            }
+        } else {
+            callback(new Error("Error contacting API !"));
+        }
+    });
+};
+
+
+/**
+ * Return outward transactions for a given address
+ * https://lisk.io/documentation?i=lisk-docs/APIReference#get-list-of-transactions
  *
  * @param    {String} senderId
- * @callback {Object}
+ * @callback {Array}
  */
 var getOutTx = function (senderId, callback) {
 
@@ -23,14 +56,7 @@ var getOutTx = function (senderId, callback) {
     }, function (err, res, body) {
         if (!err && res.statusCode == 200) {
             if (body.success) {
-                body.transactions.forEach(function (tx) {
-                    result.push({
-                        txId: tx.id,
-                        recipientId: tx.recipientId,
-                        amount: tx.amount
-                    });
-                }, this);
-                callback(null, result);
+                callback(null, body.transactions);
             } else {
                 callback(new Error("API returned success = false !"));
             }
@@ -39,6 +65,7 @@ var getOutTx = function (senderId, callback) {
         }
     });
 };
+
 
 /**
  * Return transactions from one address to another [{id, amount}] 
@@ -58,7 +85,7 @@ var getTxFromTo = function (senderId, recipientId, callback) {
             data.forEach(function (tx) {
                 if (tx.recipientId == recipientId) {
                     result.push({
-                        txId: tx.txId,
+                        txId: tx.id,
                         amount: tx.amount
                     });
                 }
@@ -67,6 +94,7 @@ var getTxFromTo = function (senderId, recipientId, callback) {
         callback(null, result);
     });
 };
+
 
 /**
  * Return balance for a given address 
@@ -98,7 +126,7 @@ var getBalance = function (address, callback) {
 };
 
 module.exports = {
-    getOutTx: getOutTx,
+    getAccount: getAccount,
     getTxFromTo: getTxFromTo,
     getBalance: getBalance
 };
