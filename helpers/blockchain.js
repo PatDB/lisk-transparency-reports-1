@@ -17,7 +17,7 @@ var getOutTx = function (senderId, callback) {
     };
 
     request.get({
-        url: api + "transactions",
+        url: api + "/transactions",
         qs: data,
         json: true
     }, function (err, res, body) {
@@ -58,7 +58,7 @@ var getTxFromTo = function (senderId, recipientId, callback) {
     };
 
     request.get({
-        url: api + "transactions",
+        url: api + "/transactions",
         qs: data,
         json: true
     }, function (err, res, body) {
@@ -93,7 +93,7 @@ var getBalance = function (address, callback) {
     };
 
     request.get({
-        url: api + "accounts/getBalance",
+        url: api + "/accounts/getBalance",
         qs: data,
         json: true
     }, function (err, res, body) {
