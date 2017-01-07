@@ -10,7 +10,6 @@ var api = require('../config').api;
  * @callback {Object}
  */
 var getAccount = function (address, callback) {
-
     data = {
         address: address
     };
@@ -40,8 +39,7 @@ var getAccount = function (address, callback) {
  * @param    {String} senderId
  * @callback {Array}
  */
-var getOutTx = function (senderId, callback) {
-
+var getOutTxs = function (senderId, callback) {
     var result = [];
 
     data = {
@@ -74,11 +72,10 @@ var getOutTx = function (senderId, callback) {
  * @param    {String} recipientId
  * @callback {Array}
  */
-var getTxFromTo = function (senderId, recipientId, callback) {
-
+var getTxsFromTo = function (senderId, recipientId, callback) {
     var result = [];
 
-    getOutTx(senderId, function (err, data) {
+    getOutTxs(senderId, function (err, data) {
         if (err) {
             callback(err);
         } else {
@@ -90,8 +87,46 @@ var getTxFromTo = function (senderId, recipientId, callback) {
                     });
                 }
             }, this);
+            callback(null, result);
         }
-        callback(null, result);
+    });
+};
+
+
+/**
+ * Return total amount from array of transactions
+ *
+ * @param    {Array} transactions
+ * @callback {Number}
+ */
+var getTxsAmount = function (transactions, callback) {
+    var result = 0;
+
+    transactions.forEach(function (tx) {
+        result += tx.amount;
+    }, this);
+
+    callback(result);
+};
+
+
+/**
+ * Return transfered amount from one address to another
+ *
+ * @param    {String} senderId
+ * @param    {String} recipientId
+ * @callback {Number}
+ */
+var getAmountFromTo = function (senderId, recipientId, callback) {
+    getTxsFromTo(senderId, recipientId, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            getTxsAmount(data, function (amount) {
+                callback(null, amount);
+            });
+
+        }
     });
 };
 
@@ -103,7 +138,6 @@ var getTxFromTo = function (senderId, recipientId, callback) {
  * @callback {Number}
  */
 var getBalance = function (address, callback) {
-
     data = {
         address: address
     };
@@ -127,6 +161,7 @@ var getBalance = function (address, callback) {
 
 module.exports = {
     getAccount: getAccount,
-    getTxFromTo: getTxFromTo,
+    getTxsFromTo: getTxsFromTo,
+    getAmountFromTo: getAmountFromTo,
     getBalance: getBalance
 };

@@ -1,25 +1,37 @@
 var blockchain = require('./helpers/blockchain');
+var from = "9120485202270553493L";
+var to = "7023069056644097238L";
 
-blockchain.getTxFromTo("9120485202270553493L", "7023069056644097238L", function (err, data) {
+blockchain.getTxsFromTo(from, to, function (err, data) {
     if (err) {
-        return(err);
+        return (err);
     } else {
+        console.log("\ngetTxsFromTo() :");
         console.log(data);
     }
 });
 
-blockchain.getBalance("9120485202270553493L", function (err, data) {
+blockchain.getBalance(from, function (err, data) {
     if (err) {
-        return(err);
+        return (err);
     } else {
+        console.log("\ngetBalance() : \n" + data);
+    }
+});
+
+blockchain.getAccount(from, function (err, data) {
+    if (err) {
+        return (err);
+    } else {
+        console.log("\ngetAccount() :");
         console.log(data);
     }
 });
 
-blockchain.getAccount("9120485202270553493L", function (err, data) {
+blockchain.getAmountFromTo(from, to, function (err, data) {
     if (err) {
-        return(err);
+        return (err);
     } else {
-        console.log(data);
+        console.log("\ngetAmountFromTo() : \n" + data);
     }
 });
