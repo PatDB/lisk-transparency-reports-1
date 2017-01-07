@@ -45,7 +45,7 @@ var getOutTx = function (senderId, callback) {
  *
  * @param    {String} senderId
  * @param    {String} recipientId
- * @callback {Object}
+ * @callback {Array}
  */
 var getTxFromTo = function (senderId, recipientId, callback) {
 
