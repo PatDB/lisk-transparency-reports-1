@@ -33,6 +33,36 @@ var getAccount = function (address, callback) {
 
 
 /**
+ * Return address for a given delegate
+ * https://lisk.io/documentation?i=lisk-docs/APIReference#get-delegate
+ *
+ * @param    {String} delegate
+ * @callback {String}
+ */
+var getAddress = function (delegate, callback) {
+    data = {
+        username: delegate
+    };
+
+    request.get({
+        url: api + "/delegates/get",
+        qs: data,
+        json: true
+    }, function (err, res, body) {
+        if (!err && res.statusCode == 200) {
+            if (body.success) {
+                callback(null, body.delegate.address);
+            } else {
+                callback(new Error("API returned success = false !"));
+            }
+        } else {
+            callback(new Error("Error contacting API !"));
+        }
+    });
+};
+
+
+/**
  * Return outward transactions for a given address
  * https://lisk.io/documentation?i=lisk-docs/APIReference#get-list-of-transactions
  *
@@ -163,5 +193,6 @@ module.exports = {
     getAccount: getAccount,
     getTxsFromTo: getTxsFromTo,
     getAmountFromTo: getAmountFromTo,
-    getBalance: getBalance
+    getBalance: getBalance,
+    getAddress: getAddress
 };

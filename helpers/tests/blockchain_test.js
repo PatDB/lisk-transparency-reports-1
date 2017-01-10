@@ -1,4 +1,5 @@
 var blockchain = require('../blockchain');
+var delegate = "sherlockstd"
 var from = "9120485202270553493L";
 var to = "7023069056644097238L";
 
@@ -31,6 +32,15 @@ blockchain.getAccount(from, function (err, data) {
 
 blockchain.getAmountFromTo(from, to, function (err, data) {
     console.log("\ngetAmountFromTo() : \n");
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(data);
+    }
+});
+
+blockchain.getAddress(delegate, function (err, data) {
+    console.log("\ngetAddress() : \n");
     if (err) {
         console.log(err);
     } else {
