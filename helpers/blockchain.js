@@ -1,5 +1,5 @@
 var request = require('request')
-var api = require('../config').api
+var api = require('../config/main').api
 
 /**
  * Return account details for a given address
