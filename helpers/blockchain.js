@@ -1,6 +1,5 @@
-var request = require('request');
-var api = require('../config').api;
-
+var request = require('request')
+var api = require('../config').api
 
 /**
  * Return account details for a given address
@@ -10,27 +9,26 @@ var api = require('../config').api;
  * @callback {Object}
  */
 var getAccount = function (address, callback) {
-    data = {
-        address: address
-    };
+  var data = {
+    address: address
+  }
 
-    request.get({
-        url: api + "/accounts",
-        qs: data,
-        json: true
-    }, function (err, res, body) {
-        if (!err && res.statusCode == 200) {
-            if (body.success) {
-                callback(null, body.account);
-            } else {
-                callback(new Error("API returned success = false !"));
-            }
-        } else {
-            callback(new Error("Error contacting API !"));
-        }
-    });
-};
-
+  request.get({
+    url: api + '/accounts',
+    qs: data,
+    json: true
+  }, function (err, res, body) {
+    if (!err && res.statusCode === 200) {
+      if (body.success) {
+        callback(null, body.account)
+      } else {
+        callback(new Error('API returned success = false !'))
+      }
+    } else {
+      callback(new Error('Error contacting API !'))
+    }
+  })
+}
 
 /**
  * Return address for a given delegate
@@ -40,27 +38,26 @@ var getAccount = function (address, callback) {
  * @callback {String}
  */
 var getAddress = function (delegate, callback) {
-    data = {
-        username: delegate
-    };
+  var data = {
+    username: delegate
+  }
 
-    request.get({
-        url: api + "/delegates/get",
-        qs: data,
-        json: true
-    }, function (err, res, body) {
-        if (!err && res.statusCode == 200) {
-            if (body.success) {
-                callback(null, body.delegate.address);
-            } else {
-                callback(new Error("API returned success = false !"));
-            }
-        } else {
-            callback(new Error("Error contacting API !"));
-        }
-    });
-};
-
+  request.get({
+    url: api + '/delegates/get',
+    qs: data,
+    json: true
+  }, function (err, res, body) {
+    if (!err && res.statusCode === 200) {
+      if (body.success) {
+        callback(null, body.delegate.address)
+      } else {
+        callback(new Error('API returned success = false !'))
+      }
+    } else {
+      callback(new Error('Error contacting API !'))
+    }
+  })
+}
 
 /**
  * Return outward transactions for a given address
@@ -70,58 +67,54 @@ var getAddress = function (delegate, callback) {
  * @callback {Array}
  */
 var getOutTxs = function (senderId, callback) {
-    var result = [];
+  var data = {
+    senderId: senderId,
+    limit: 100
+  }
 
-    data = {
-        senderId: senderId,
-        limit: "100"
-    };
-
-    request.get({
-        url: api + "/transactions",
-        qs: data,
-        json: true
-    }, function (err, res, body) {
-        if (!err && res.statusCode == 200) {
-            if (body.success) {
-                callback(null, body.transactions);
-            } else {
-                callback(new Error("API returned success = false !"));
-            }
-        } else {
-            callback(new Error("Error contacting API !"));
-        }
-    });
-};
-
+  request.get({
+    url: api + '/transactions',
+    qs: data,
+    json: true
+  }, function (err, res, body) {
+    if (!err && res.statusCode === 200) {
+      if (body.success) {
+        callback(null, body.transactions)
+      } else {
+        callback(new Error('API returned success = false !'))
+      }
+    } else {
+      callback(new Error('Error contacting API !'))
+    }
+  })
+}
 
 /**
- * Return transactions from one address to another [{id, amount}] 
+ * Return transactions from one address to another [{id, amount}]
  *
  * @param    {String} senderId
  * @param    {String} recipientId
  * @callback {Array}
  */
 var getTxsFromTo = function (senderId, recipientId, callback) {
-    var result = [];
+  var result = []
 
-    getOutTxs(senderId, function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            data.forEach(function (tx) {
-                if (tx.recipientId == recipientId) {
-                    result.push({
-                        txId: tx.id,
-                        amount: tx.amount
-                    });
-                }
-            }, this);
-            callback(null, result);
+  getOutTxs(senderId, function (err, data) {
+    if (err) {
+      callback(err)
+    } else {
+      data.forEach(function (tx) {
+        if (tx.recipientId === recipientId) {
+          result.push({
+            txId: tx.id,
+            amount: tx.amount
+          })
         }
-    });
-};
-
+      }, this)
+      callback(null, result)
+    }
+  })
+}
 
 /**
  * Return total amount from array of transactions
@@ -130,15 +123,14 @@ var getTxsFromTo = function (senderId, recipientId, callback) {
  * @callback {Number}
  */
 var getTxsAmount = function (transactions, callback) {
-    var result = 0;
+  var result = 0
 
-    transactions.forEach(function (tx) {
-        result += tx.amount;
-    }, this);
+  transactions.forEach(function (tx) {
+    result += tx.amount
+  }, this)
 
-    callback(result);
-};
-
+  callback(result)
+}
 
 /**
  * Return transfered amount from one address to another
@@ -148,51 +140,49 @@ var getTxsAmount = function (transactions, callback) {
  * @callback {Number}
  */
 var getAmountFromTo = function (senderId, recipientId, callback) {
-    getTxsFromTo(senderId, recipientId, function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            getTxsAmount(data, function (amount) {
-                callback(null, amount);
-            });
-
-        }
-    });
-};
-
+  getTxsFromTo(senderId, recipientId, function (err, data) {
+    if (err) {
+      callback(err)
+    } else {
+      getTxsAmount(data, function (amount) {
+        callback(null, amount)
+      })
+    }
+  })
+}
 
 /**
- * Return balance for a given address 
+ * Return balance for a given address
  *
  * @param    {String} address
  * @callback {Number}
  */
 var getBalance = function (address, callback) {
-    data = {
-        address: address
-    };
+  var data = {
+    address: address
+  }
 
-    request.get({
-        url: api + "/accounts/getBalance",
-        qs: data,
-        json: true
-    }, function (err, res, body) {
-        if (!err && res.statusCode == 200) {
-            if (body.success) {
-                callback(null, body.balance);
-            } else {
-                callback(new Error("API returned success = false !"));
-            }
-        } else {
-            callback(new Error("Error contacting API !"));
-        }
-    });
-};
+  request.get({
+    url: api + '/accounts/getBalance',
+    qs: data,
+    json: true
+  }, function (err, res, body) {
+    if (!err && res.statusCode === 200) {
+      if (body.success) {
+        callback(null, body.balance)
+      } else {
+        callback(new Error('API returned success = false !'))
+      }
+    } else {
+      callback(new Error('Error contacting API !'))
+    }
+  })
+}
 
 module.exports = {
-    getAccount: getAccount,
-    getTxsFromTo: getTxsFromTo,
-    getAmountFromTo: getAmountFromTo,
-    getBalance: getBalance,
-    getAddress: getAddress
-};
+  getAccount,
+  getTxsFromTo,
+  getAmountFromTo,
+  getBalance,
+  getAddress
+}
