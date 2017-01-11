@@ -1,3 +1,5 @@
+<img align="right" src="https://cdn.rawgit.com/feross/standard/master/badge.svg">
+
 # Lisk Transparency Report Tool
 
 This automated tool allow Lisk delegates to manage (very) easily their transparency reports, and voters to access the data efficiently.

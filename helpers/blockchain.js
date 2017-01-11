@@ -1,5 +1,5 @@
 var request = require('request')
-var api = require('../config').api
+var api = require('../config/main').api
 
 /**
  * Return account details for a given address
@@ -22,7 +22,9 @@ var getAccount = function (address, callback) {
       if (body.success) {
         callback(null, body.account)
       } else {
-        callback(new Error('API returned success = false !'))
+        callback({
+          success: false
+        })
       }
     } else {
       callback(new Error('Error contacting API !'))
@@ -31,15 +33,15 @@ var getAccount = function (address, callback) {
 }
 
 /**
- * Return address for a given delegate
+ * Return delegate for a given username
  * https://lisk.io/documentation?i=lisk-docs/APIReference#get-delegate
  *
- * @param    {String} delegate
+ * @param    {String} username
  * @callback {String}
  */
-var getAddress = function (delegate, callback) {
+var getDelegate = function (username, callback) {
   var data = {
-    username: delegate
+    username: username
   }
 
   request.get({
@@ -49,7 +51,7 @@ var getAddress = function (delegate, callback) {
   }, function (err, res, body) {
     if (!err && res.statusCode === 200) {
       if (body.success) {
-        callback(null, body.delegate.address)
+        callback(null, body.delegate)
       } else {
         callback(new Error('API returned success = false !'))
       }
@@ -184,5 +186,5 @@ module.exports = {
   getTxsFromTo,
   getAmountFromTo,
   getBalance,
-  getAddress
+  getDelegate
 }

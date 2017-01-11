@@ -1,12 +1,27 @@
-var express = require('express')
-var path = require('path')
-var logger = require('morgan')
-var cookieParser = require('cookie-parser')
-var bodyParser = require('body-parser')
+const express = require('express')
+const path = require('path')
+const logger = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+const config = require('./config/main')
 
-var index = require('./routes/index')
+const index = require('./routes/index')
+const auth = require('./routes/auth')
 
-var app = express()
+// Use native Node promises
+mongoose.Promise = global.Promise
+
+// connect to MongoDB
+mongoose.connect(config.mongo_url, function (err) {
+  if (err) {
+    console.log('\nError when try to connect to db', err)
+  } else {
+    console.log('\nConnection to db successful')
+  }
+})
+
+const app = express()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -21,6 +36,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
+app.use('/auth', auth)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
