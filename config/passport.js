@@ -1,18 +1,18 @@
 const passport = require('passport')
-const User = require('../models/user')
+const User = require('../models/User')
 const config = require('./main')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
-const LocalStrategy = require('passport-local')
+const LocalStrategy = require('passport-local').Strategy
 
 const localOptions = {
   usernameField: 'delegate'
 }
 
 // Setting up local login strategy
-const localLogin = new LocalStrategy(localOptions, function (email, password, done) {
+const localLogin = new LocalStrategy(localOptions, function (delegate, password, done) {
   User.findOne({
-    email: email
+    delegate: delegate
   }, function (err, user) {
     if (err) {
       return done(err)
@@ -31,9 +31,9 @@ const localLogin = new LocalStrategy(localOptions, function (email, password, do
         return done(null, false, {
           error: 'Your login details could not be verified. Please try again.'
         })
+      } else {
+        return done(null, user)
       }
-
-      return done(null, user)
     })
   })
 })
@@ -60,5 +60,5 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
   })
 })
 
-passport.use(jwtLogin)
 passport.use(localLogin)
+passport.use(jwtLogin)

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const bcrypt = require('bcrypt-nodejs')
+const bcrypt = require('bcrypt')
 
 // User schema
 const UserSchema = new Schema({
@@ -27,11 +27,9 @@ const UserSchema = new Schema({
     enum: ['Delegate', 'Admin'],
     default: 'Delegate'
   },
-  resetPasswordToken: {
-    type: String
-  },
-  resetPasswordExpires: {
-    type: Date
+  confirmed: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
@@ -40,16 +38,17 @@ const UserSchema = new Schema({
 // Pre-save of user to database, hash password if password is modified or new
 UserSchema.pre('save', function (next) {
   const user = this
-  const SALT_FACTOR = 5
+  const saltRounds = 5
 
   if (!user.isModified('password')) return next()
 
-  bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
+  bcrypt.genSalt(saltRounds, function (err, salt) {
     if (err) return next(err)
 
-    bcrypt.hash(user.password, salt, null, function (err, hash) {
+    bcrypt.hash(user.password, salt, function (err, hash) {
       if (err) return next(err)
       user.password = hash
+      console.log('Hash: ' + hash)
       next()
     })
   })
