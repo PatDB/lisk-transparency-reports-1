@@ -14,4 +14,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Authentification API with confirmation by sending a little transaction
 - This CHANGELOG file to hopefully serve as an evolving example of a standardized open source project CHANGELOG.
 
-[Unreleased]: https://github.com/SherlockStd/lisk-transparency-reports/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/SherlockStd/lisk-transparency-reports/compare/v0.1.0...development
