@@ -1,6 +1,6 @@
 <img align="right" src="https://cdn.rawgit.com/feross/standard/master/badge.svg">
 
-# Lisk Transparency Report Tool [version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+# Lisk Transparency Report Tool ![version](https://img.shields.io/badge/version-0.1.0-blue.svg)
 
 This automated tool allow Lisk delegates to manage (very) easily their transparency reports, and voters to access the data efficiently.
 
