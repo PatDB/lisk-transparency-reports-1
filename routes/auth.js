@@ -112,7 +112,7 @@ router.post('/login', requireLogin, function (req, res, next) {
 // --------------------
 // Amount route
 // --------------------
-router.post('/amount', requireAuth, function (req, res, next) {
+router.get('/amount', requireAuth, function (req, res, next) {
   // Get user
   User.findById(req.user._id, function (err, foundUser) {
     if (err) {
@@ -217,24 +217,8 @@ router.post('/confirm', requireAuth, function (req, res, next) {
 
         // If userAmount wasn't already generated
       } else {
-        // Generate new amount
-        let amount = Math.random().toFixed(4) * 100000000
-        // Store it in user document
-        foundUser.confirmAmount = amount
-
-        // Save the user document
-        foundUser.save(function (err, updatedUser) {
-          if (err) {
-            res.status(422).json({
-              error: 'Error saving user to DB.'
-            })
-            return next(err)
-          }
-          res.status(200).json({
-            confirmed: false,
-            amount: amount,
-            address: config.address
-          })
+        res.status(200).json({
+          error: 'You first need to generate amount: GET /api/auth/amount'
         })
       }
     } else {
