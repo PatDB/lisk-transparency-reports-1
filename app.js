@@ -5,9 +5,7 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const config = require('./config/main')
-
-const index = require('./routes/index')
-const auth = require('./routes/auth')
+const router = require('./router')
 
 // Use native Node promises
 mongoose.Promise = global.Promise
@@ -35,8 +33,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', index)
-app.use('/auth', auth)
+router(app)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

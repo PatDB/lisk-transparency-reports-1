@@ -1,25 +1,13 @@
-const express = require('express')
 const jwt = require('jsonwebtoken')
-const passport = require('passport')
-const router = express.Router()
 const blockchain = require('../helpers/blockchain')
 
-const passportConfig = require('../config/passport')
 const User = require('../models/User')
 const config = require('../config/main')
-
-// Middleware to require login/auth
-const requireAuth = passport.authenticate('jwt', {
-  session: false
-})
-const requireLogin = passport.authenticate('local', {
-  session: false
-})
 
 // --------------------
 // Registration route
 // --------------------
-router.post('/register', function (req, res, next) {
+const register = function (req, res, next) {
   // Check for registration errors
   const username = req.body.delegate
   const password = req.body.password
@@ -89,12 +77,12 @@ router.post('/register', function (req, res, next) {
       })
     })
   })
-})
+}
 
 // --------------------
 // Login route
 // --------------------
-router.post('/login', requireLogin, function (req, res, next) {
+const login = function (req, res, next) {
   let user = req.user
 
   let userInfo = {
@@ -107,12 +95,12 @@ router.post('/login', requireLogin, function (req, res, next) {
     token: 'JWT ' + generateToken(userInfo),
     user: user
   })
-})
+}
 
 // --------------------
 // Amount route
 // --------------------
-router.get('/amount', requireAuth, function (req, res, next) {
+const amount = function (req, res, next) {
   // Get user
   User.findById(req.user._id, function (err, foundUser) {
     if (err) {
@@ -160,12 +148,12 @@ router.get('/amount', requireAuth, function (req, res, next) {
       })
     }
   })
-})
+}
 
 // --------------------
 // Confirm route
 // --------------------
-router.post('/confirm', requireAuth, function (req, res, next) {
+const confirm = function (req, res, next) {
   let txId = req.body.txId
   // Get user
   User.findById(req.user._id, function (err, foundUser) {
@@ -227,19 +215,19 @@ router.post('/confirm', requireAuth, function (req, res, next) {
       })
     }
   })
-})
+}
 
 // --------------------
 // Functions
 // --------------------
 
-function generateToken (user) {
+const generateToken = function (user) {
   return jwt.sign(user, config.secret, {
     expiresIn: config.jwtExpiresIn
   })
 }
 
-function roleAuthorization (role) {
+const roleAuthorization = function (role) {
   return function (req, res, next) {
     const user = req.user
 
@@ -264,4 +252,11 @@ function roleAuthorization (role) {
   }
 }
 
-module.exports = router
+module.exports = {
+  register,
+  login,
+  amount,
+  confirm,
+  generateToken,
+  roleAuthorization
+}
