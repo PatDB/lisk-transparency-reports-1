@@ -92,8 +92,7 @@ const login = function (req, res, next) {
   }
 
   res.status(200).json({
-    token: 'JWT ' + generateToken(userInfo),
-    user: user
+    token: 'JWT ' + generateToken(userInfo)
   })
 }
 
