@@ -30,6 +30,9 @@ const UserSchema = new Schema({
   confirmed: {
     type: Boolean,
     default: false
+  },
+  confirmAmount: {
+    type: Number
   }
 }, {
   timestamps: true
@@ -48,7 +51,6 @@ UserSchema.pre('save', function (next) {
     bcrypt.hash(user.password, salt, function (err, hash) {
       if (err) return next(err)
       user.password = hash
-      console.log('Hash: ' + hash)
       next()
     })
   })

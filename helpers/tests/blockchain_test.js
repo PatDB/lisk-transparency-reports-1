@@ -1,7 +1,9 @@
-var blockchain = require('../blockchain')
-var delegate = 'sherlockstd'
-var from = '9120485202270553493L'
-var to = '7023069056644097238L'
+let blockchain = require('../blockchain')
+let config = require('../../config/main')
+let delegate = 'sherlockstd'
+let from = '9120485202270553493L'
+let to = '7023069056644097238L'
+let address = config.address
 
 blockchain.getTxsFromTo(from, to, function (err, data) {
   console.log('\ngetTxsFromTo() : \n')
@@ -39,8 +41,17 @@ blockchain.getAmountFromTo(from, to, function (err, data) {
   }
 })
 
-blockchain.getAddress(delegate, function (err, data) {
+blockchain.getDelegate(delegate, function (err, data) {
   console.log('\ngetAddress() : \n')
+  if (err) {
+    console.log(err)
+  } else {
+    console.log(data)
+  }
+})
+
+blockchain.checkConfirmation(from, address, '12831626967363815821', 31530000, function (err, data) {
+  console.log('\ncheckConfirmation() : \n')
   if (err) {
     console.log(err)
   } else {
