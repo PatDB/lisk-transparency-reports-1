@@ -71,6 +71,7 @@ var getDelegate = function (username, callback) {
 var getOutTxs = function (senderId, callback) {
   var data = {
     senderId: senderId,
+    orderBy: 'timestamp:desc',
     limit: 100
   }
 
@@ -114,6 +115,42 @@ var getTxsFromTo = function (senderId, recipientId, callback) {
         }
       }, this)
       callback(null, result)
+    }
+  })
+}
+
+/**
+ * Check transaction for account verification
+ *
+ * @param    {String} senderId
+ * @param    {String} recipientId
+ * @param    {String} txId
+ * @param    {Number} amount
+ * @callback {Boolean}
+ */
+var checkConfirmation = function (senderId, recipientId, txId, amount, callback) {
+  var data = {
+    id: txId
+  }
+
+  request.get({
+    url: api + '/transactions/get',
+    qs: data,
+    json: true
+  }, function (err, res, body) {
+    if (!err && res.statusCode === 200) {
+      if (body.success) {
+        let tx = body.transaction
+        if (tx.senderId === senderId && tx.recipientId === recipientId && tx.amount === amount) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      } else {
+        callback(new Error('API returned success = false !'))
+      }
+    } else {
+      callback(new Error('Error contacting API !'))
     }
   })
 }
@@ -186,5 +223,6 @@ module.exports = {
   getTxsFromTo,
   getAmountFromTo,
   getBalance,
-  getDelegate
+  getDelegate,
+  checkConfirmation
 }

@@ -23,7 +23,6 @@ router.post('/register', function (req, res, next) {
   // Check for registration errors
   const username = req.body.delegate
   const password = req.body.password
-  console.log(username + ' -> ' + password)
 
   // Return error if no delegate name provided
   if (!username) {
@@ -49,7 +48,6 @@ router.post('/register', function (req, res, next) {
 
     // If user is not unique, return error
     if (existingUser) {
-      console.log('This delegate is already registered.')
       return res.status(422).send({
         error: 'This delegate is already registered.'
       })
@@ -73,22 +71,20 @@ router.post('/register', function (req, res, next) {
         }
       })
 
-      user.save(function (err, user) {
+      user.save(function (err, newUser) {
         if (err) {
           return next(err)
         }
 
-        console.log(user)
-
         let userInfo = {
-          delegate: user.delegate,
-          password: user.password
+          _id: newUser._id,
+          delegate: newUser.delegate,
+          password: newUser.password
         }
 
         // Respond with JWT if user was created
         res.status(201).json({
-          token: 'JWT ' + generateToken(userInfo),
-          user: user
+          token: 'JWT ' + generateToken(userInfo)
         })
       })
     })
@@ -99,13 +95,153 @@ router.post('/register', function (req, res, next) {
 // Login route
 // --------------------
 router.post('/login', requireLogin, function (req, res, next) {
-  let user = req.body
+  let user = req.user
 
-  console.log(user)
+  let userInfo = {
+    _id: user._id,
+    delegate: user.delegate,
+    password: user.password
+  }
 
   res.status(200).json({
-    token: 'JWT ' + generateToken(user),
+    token: 'JWT ' + generateToken(userInfo),
     user: user
+  })
+})
+
+// --------------------
+// Amount route
+// --------------------
+router.post('/amount', requireAuth, function (req, res, next) {
+  // Get user
+  User.findById(req.user._id, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+    // If user isn't confirmed
+    if (!foundUser.confirmed) {
+      // If userAmount was already generated
+      if (foundUser.confirmAmount) {
+        // res the amount to send stored in DB
+        res.status(200).json({
+          confirmed: false,
+          amount: foundUser.confirmAmount,
+          address: config.address
+        })
+
+        // If userAmount wasn't already generated
+      } else {
+        // Generate new amount
+        let amount = Math.random().toFixed(4) * 100000000
+        // Store it in user document
+        foundUser.confirmAmount = amount
+
+        // Save the user document
+        foundUser.save(function (err, updatedUser) {
+          if (err) {
+            res.status(422).json({
+              error: 'Error saving user to DB.'
+            })
+            return next(err)
+          }
+          res.status(200).json({
+            confirmed: false,
+            amount: amount,
+            address: config.address
+          })
+        })
+      }
+    } else {
+      res.status(200).json({
+        confirmed: true
+      })
+    }
+  })
+})
+
+// --------------------
+// Confirm route
+// --------------------
+router.post('/confirm', requireAuth, function (req, res, next) {
+  let txId = req.body.txId
+  // Get user
+  User.findById(req.user._id, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+    // If user is not confirmed
+    if (!foundUser.confirmed) {
+      // If userAmount was already generated
+      if (foundUser.confirmAmount) {
+        // Check tx in blockchain
+        blockchain.checkConfirmation(foundUser.profile.address, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
+          if (err) {
+            res.status(422).json({
+              error: 'An error occured trying to verify tx.'
+            })
+            return next(err)
+          } else {
+            // If tx received
+            if (confirmed) {
+              // Mark user document as confirmed
+              foundUser.confirmed = true
+              // Save the user document
+              foundUser.save(function (err, updatedUser) {
+                if (err) {
+                  res.status(422).json({
+                    error: 'Error saving user to DB.'
+                  })
+                  return next(err)
+                }
+                res.status(200).json({
+                  confirmed: true
+                })
+              })
+              // res the amount to send stored in DB
+            } else {
+              // res the amount to send stored in DB
+              res.status(200).json({
+                confirmed: false,
+                amount: foundUser.confirmAmount,
+                address: config.address
+              })
+            }
+          }
+        })
+
+        // If userAmount wasn't already generated
+      } else {
+        // Generate new amount
+        let amount = Math.random().toFixed(4) * 100000000
+        // Store it in user document
+        foundUser.confirmAmount = amount
+
+        // Save the user document
+        foundUser.save(function (err, updatedUser) {
+          if (err) {
+            res.status(422).json({
+              error: 'Error saving user to DB.'
+            })
+            return next(err)
+          }
+          res.status(200).json({
+            confirmed: false,
+            amount: amount,
+            address: config.address
+          })
+        })
+      }
+    } else {
+      res.status(200).json({
+        confirmed: true
+      })
+    }
   })
 })
 
@@ -115,7 +251,7 @@ router.post('/login', requireLogin, function (req, res, next) {
 
 function generateToken (user) {
   return jwt.sign(user, config.secret, {
-    expiresIn: 10080 // in seconds
+    expiresIn: config.jwtExpiresIn
   })
 }
 
