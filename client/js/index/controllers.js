@@ -84,15 +84,14 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
 
 app.run(function ($rootScope, $location, $http, $sessionStorage) {
   if (typeof $sessionStorage.currentUser !== 'undefined') {
-    console.log(typeof $sessionStorage.currentUser.token)
     $http.defaults.headers.common.Authorization = $sessionStorage.currentUser.token
   }
   // register listener to watch route changes
   $rootScope.$on('$routeChangeStart', function (event, next, current) {
     if (!$sessionStorage.currentUser || !$sessionStorage.currentUser.token) {
-      // no logged user, we should be going to #login
+      // no logged user, we should be going to #auth
       if (next.templateUrl !== 'templates/auth.html') {
-        // not going to #login, we should redirect now
+        // not going to #auth, we should redirect now
         $location.path('/auth')
       }
     } else {
