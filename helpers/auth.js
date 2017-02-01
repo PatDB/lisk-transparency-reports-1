@@ -85,14 +85,23 @@ const register = function (req, res, next) {
 const login = function (req, res, next) {
   let user = req.user
 
-  let userInfo = {
-    _id: user._id,
-    delegate: user.delegate,
-    password: user.password
-  }
+  User.findById(req.user._id, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+    let userInfo = {
+      _id: user._id,
+      delegate: user.delegate,
+      password: user.password
+    }
 
-  res.status(200).json({
-    token: 'JWT ' + generateToken(userInfo)
+    res.status(200).json({
+      token: 'JWT ' + generateToken(userInfo),
+      confirmed: foundUser.confirmed
+    })
   })
 }
 
