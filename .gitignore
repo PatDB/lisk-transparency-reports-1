@@ -38,3 +38,6 @@ jspm_packages
 
 # Build directory
 public
+
+# VSCode workspace settings
+.vscode
