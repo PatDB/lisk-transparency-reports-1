@@ -11,6 +11,13 @@ const AddressSchema = new Schema({
     type: String,
     required: true,
     enum: ['Holding', 'Donations', 'Personal', 'Servers', 'Unknown']
+  },
+  confirmed: {
+    type: Boolean,
+    default: false
+  },
+  confirmAmount: {
+    type: Number
   }
 })
 

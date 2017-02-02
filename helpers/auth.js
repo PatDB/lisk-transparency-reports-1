@@ -131,7 +131,6 @@ const amount = function (req, res, next) {
       } else {
         // Generate new amount
         let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
-        console.log(amount)
         // Store it in user document
         foundUser.confirmAmount = amount
 

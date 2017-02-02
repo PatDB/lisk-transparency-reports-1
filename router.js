@@ -3,6 +3,7 @@ const passport = require('passport')
 const passportConfig = require('./config/passport')
 
 const AuthHelper = require('./helpers/auth')
+const AddrHelper = require('./helpers/addresses')
 
 // Middlewares to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
@@ -12,6 +13,7 @@ module.exports = function (app) {
   // Initialize route groups
   const apiRoutes = express.Router()
   const authRoutes = express.Router()
+  const addrRoutes = express.Router()
   const index = require('./routes/index')
 
   // ==========================
@@ -30,6 +32,20 @@ module.exports = function (app) {
 
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
+
+  // ==========================
+  // Addresses Routes
+  // ==========================
+  apiRoutes.use('/addresses', addrRoutes)
+
+  // Generate aleatory amount to send route
+  addrRoutes.post('/add', requireAuth, AddrHelper.add)
+
+  // Verify transaction route
+  addrRoutes.post('/confirm', requireAuth, AddrHelper.confirm)
+
+  // Delete address route
+  addrRoutes.delete('/remove', requireAuth, AddrHelper.remove)
 
   // Set url for API group routes
   app.use('/api', apiRoutes)
