@@ -27,12 +27,6 @@ module.exports = function (grunt) {
           src: ['node_modules/angular-route/angular-route.min.js.map'],
           dest: 'public/js/lib/angular-route.min.js.map'
         }, {
-          src: ['node_modules/material-design-lite/material.min.js'],
-          dest: 'public/js/lib/material.min.js'
-        }, {
-          src: ['node_modules/material-design-lite/material.min.js.map'],
-          dest: 'public/js/lib/material.min.js.map'
-        }, {
           src: ['node_modules/ngstorage/ngStorage.min.js'],
           dest: 'public/js/lib/ngStorage.min.js'
         }, {
@@ -56,9 +50,6 @@ module.exports = function (grunt) {
 
       cssLib: {
         files: [{
-          src: ['node_modules/material-design-lite/material.min.css'],
-          dest: 'public/css/material.min.css'
-        }, {
           src: ['node_modules/sweetalert/lib/sweet-alert.css'],
           dest: 'public/css/sweet-alert.css'
         }]

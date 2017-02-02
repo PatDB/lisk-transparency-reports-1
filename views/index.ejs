@@ -8,24 +8,20 @@
 		<%= title %>
 	</title>
 	<link rel='stylesheet' href='css/index.min.css' />
-	<link rel='stylesheet' href='css/material.min.css' />
 	<link rel='stylesheet' href='css/sweet-alert.css' />
-	<script src="js/lib/material.min.js"></script>
 </head>
 
 <body>
-	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-		<header class="mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
-			<div class="mdl-layout__header-row">
-				<span class="mdl-layout-title">Lisk Transparency Reports</span>
-			</div>
+	<div>
+		<header>
+				<h1>Lisk Transparency Reports</h1>
 		</header>
-		<div ng-controller="SidebarCtrl" class="mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color-text--white" ng-click="go('/')">Home</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color-text--white" ng-click="go('/verify')">Verify</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored mdl-color-text--white" ng-click="logout()">Logout</button>
+		<div ng-controller="SidebarCtrl">
+			<button ng-click="go('/')">Home</button>
+			<button ng-click="go('/verify')">Verify</button>
+			<button ng-click="logout()">Logout</button>
 		</div>
-		<main class="mdl-layout__content mdl-color--grey-100">
+		<main>
 				<ng-view></ng-view>
 		</main>
 	</div>
