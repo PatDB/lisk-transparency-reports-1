@@ -1,3 +1,4 @@
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LiskFrance/lisk-transparency-reports/blob/master/LICENSE)
 [![version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/SherlockStd/lisk-transparency-reports/releases)
 [![Dependency Status](https://gemnasium.com/badges/github.com/SherlockStd/lisk-transparency-reports.svg)](https://gemnasium.com/github.com/SherlockStd/lisk-transparency-reports)
 
@@ -24,7 +25,7 @@ npm install
 
 ## Configuration
 
-The configuration is stored in the /config.js file.
+The configuration is stored in the /config/main.js file.
 
 
 ## Launch
