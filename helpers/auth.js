@@ -54,8 +54,7 @@ const register = function (req, res, next) {
         delegate: username,
         password: password,
         profile: {
-          address: delegate.address,
-          publicKey: delegate.publicKey
+          forge: delegate.address
         }
       })
 
@@ -176,7 +175,7 @@ const confirm = function (req, res, next) {
       // If userAmount was already generated
       if (foundUser.confirmAmount) {
         // Check tx in blockchain
-        blockchain.checkConfirmation(foundUser.profile.address, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
+        blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
           if (err) {
             res.status(422).json({
               error: 'An error occured trying to verify tx.'
