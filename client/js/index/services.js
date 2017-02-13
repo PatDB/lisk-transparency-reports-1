@@ -50,6 +50,19 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
+  function displayAll (callback) {
+    $http.get('/api/auth/test1')
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data.allUsers)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
   function Amount (callback) {
     $http.get('/api/auth/amount')
       .then(function (res) {
@@ -94,6 +107,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
   return {
     Register,
     Login,
+    displayAll,
     Amount,
     Confirm,
     Logout,

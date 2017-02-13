@@ -80,6 +80,10 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
       }
     })
   }
+
+  AuthFactory.displayAll(function (res) {
+    $scope.test2 = res
+  })
 }])
 
 app.run(function ($rootScope, $location, $http, $sessionStorage) {

@@ -33,6 +33,9 @@ module.exports = function (app) {
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
 
+  // Verify transaction route
+  authRoutes.get('/test1', AuthHelper.getAllUsers)
+
   // ==========================
   // Addresses Routes
   // ==========================

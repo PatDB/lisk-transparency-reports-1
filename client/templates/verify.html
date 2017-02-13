@@ -11,4 +11,11 @@
       <input type="text" id="ptxId" ng-model="txId" />
     <button ng-click="verify()">Verify transaction</button>
   </div>
+
+  <div>
+    <div ng-repeat="item in test2">      
+      <p><b>Delegate : {{ item.delegate }}</b><br>
+      Forge Id : {{ item.profile.forge }}</p> 
+    </div>
+  </div>
 </div>

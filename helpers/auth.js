@@ -103,6 +103,23 @@ const login = function (req, res, next) {
     })
   })
 }
+// --------------------
+// Display All delegates
+// --------------------
+
+const getAllUsers = function (req, res, next) {
+  User.find(function (err, users) {
+    if (err) {
+      res.status(500).json({
+        error: 'Bonjour France.'
+      })
+      return next(err)
+    }
+    res.status(200).json({
+      allUsers: users
+    })
+  })
+}
 
 // --------------------
 // Amount route
@@ -262,6 +279,7 @@ const roleAuthorization = function (role) {
 module.exports = {
   register,
   login,
+  getAllUsers,
   amount,
   confirm,
   generateToken,
