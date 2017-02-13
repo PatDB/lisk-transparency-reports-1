@@ -95,7 +95,7 @@ module.exports = function (grunt) {
       client: {
         options: {
           position: 'top',
-          banner: '/*\n<%= pkg.name %> v<%= pkg.version %>\nhttps://github.com/SherlockStd/lisk-transparency-reports\n*/\n',
+          banner: '/*\n<%= pkg.name %> v<%= pkg.version %>\nhttps://github.com/LiskFrance/lisk-transparency-reports\n*/\n',
           linebreak: true
         },
         files: {

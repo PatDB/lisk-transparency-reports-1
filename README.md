@@ -17,7 +17,7 @@ This automated tool allow Lisk delegates to manage (very) easily their transpare
 ## Installation
 
 ```bash
-git clone https://github.com/SherlockStd/lisk-transparency-reports.git
+git clone https://github.com/LiskFrance/lisk-transparency-reports.git
 cd lisk-transparency-reports
 npm install
 ```
@@ -38,7 +38,7 @@ npm start
 ## Authors
 
 - Pierre Cavin <sherlock@sherlockstd.io>
-- Remo Bonfante <anamixlisk@libero.it>
+- Tariq Riahi <tariq@lisk-france.fr>
 
 
 ## License
