@@ -16,7 +16,7 @@ app.config(['$routeProvider', function ($routeProvider) {
     templateUrl: 'templates/delegates.html',
     controller: 'DelegatesCtrl'
   })
-  .when('/report', {
+  .when('/report/:param1', {
     templateUrl: 'templates/report.html',
     controller: 'ReportCtrl'
   })
