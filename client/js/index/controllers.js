@@ -106,6 +106,7 @@ app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$session
   AuthFactory.displayAll(function (res) {
     $scope.delegates = res
   })
+  
 }])
 
 
@@ -120,8 +121,8 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSt
     $scope.delegate = res
     userPublickey = res.publicKey
 
-    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res2) {
-        $scope.totalForgedLisksForUser = res2
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res) {
+        $scope.totalForgedLisksForUser = res
     })
   })
   
@@ -135,9 +136,15 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSt
 app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
   //Got it in param from the url
   let userToDisplayReport = $routeParams.param1
+  let userPublickey
 
   AuthFactory.getUserh(userToDisplayReport, function(res) {
     $scope.delegate = res
+    userPublickey = res.publicKey
+
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res) {
+        $scope.totalForgedLisksForUser = res
+    })
   })
 }])
 
