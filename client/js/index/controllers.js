@@ -81,6 +81,18 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
     })
   }
 
+ 
+}])
+
+
+app.controller('ReportCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
+  AuthFactory.displayAll(function (res) {
+    $scope.test2 = res
+  })
+}])
+
+
+app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   AuthFactory.displayAll(function (res) {
     $scope.test2 = res
   })

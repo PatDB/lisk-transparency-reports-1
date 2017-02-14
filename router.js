@@ -33,7 +33,7 @@ module.exports = function (app) {
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
 
-  // Verify transaction route
+  // Route to get all active delegates
   authRoutes.get('/test1', AuthHelper.getAllUsers)
 
   // ==========================
