@@ -62,6 +62,28 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         callback(e)
       })
   }
+  function getUserh (username, callback) {
+    console.log(username)
+     /*$http.get('/api/auth/getDelegate', {
+       username: username
+     })*/
+     $http({
+          url: '/api/auth/getDelegate', 
+          method: 'GET',
+          params: {username: username}
+      })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+ 
 
   function Amount (callback) {
     $http.get('/api/auth/amount')
@@ -108,9 +130,11 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     Register,
     Login,
     displayAll,
+    getUserh,
     Amount,
     Confirm,
     Logout,
     Token
   }
 })
+

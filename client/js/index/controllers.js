@@ -88,8 +88,10 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
 app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
   //Got it in param from the url
   let userToDisplayReport = $routeParams.param1
-  $scope.test2 = userToDisplayReport
-
+  console.log(userToDisplayReport)
+  AuthFactory.getUserh(userToDisplayReport, function(res) {
+    $scope.test = res
+  })
 }])
 
 

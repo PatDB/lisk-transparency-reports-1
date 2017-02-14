@@ -43,13 +43,14 @@ var getDelegate = function (username, callback) {
   var data = {
     username: username
   }
-
+  console.log(username)
   request.get({
     url: api + '/delegates/get',
     qs: data,
     json: true
   }, function (err, res, body) {
     if (!err && res.statusCode === 200) {
+      console.log(body)
       if (body.success) {
         callback(null, body.delegate)
       } else {

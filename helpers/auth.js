@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const blockchain = require('../helpers/blockchain')
-
+var request = require('request')
+var api = require('../config/main').api
 const User = require('../models/User')
 const config = require('../config/main')
 
@@ -118,6 +119,23 @@ const getAllUsers = function (req, res, next) {
     res.status(200).json({
       allUsers: users
     })
+  })
+}
+
+const getUser = function (req, res, next) {
+  //Create here the function to get the userinfos
+  
+  let username= req.query.username
+  console.log(username)
+  blockchain.getDelegate(username, function (err, delegate) {
+      if (err) {
+        return res.status(422).send({
+          success: false,
+          error: 'This delegate do not exist'
+        })
+      }else{
+        return res.status(200).send(delegate)
+      }
   })
 }
 
@@ -280,6 +298,7 @@ module.exports = {
   register,
   login,
   getAllUsers,
+  getUser,  
   amount,
   confirm,
   generateToken,
