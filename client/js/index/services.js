@@ -82,6 +82,22 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
+  function getTotalLisksForgedForUser (publicKey, callback) {
+    $http({
+          url: '/api/auth/getForgedLisks', 
+          method: 'GET',
+          params: {publicKey: publicKey}
+      })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
  
 
   function Amount (callback) {
@@ -130,6 +146,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     Login,
     displayAll,
     getUserh,
+    getTotalLisksForgedForUser,
     Amount,
     Confirm,
     Logout,

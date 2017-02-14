@@ -50,7 +50,6 @@ var getDelegate = function (username, callback) {
     json: true
   }, function (err, res, body) {
     if (!err && res.statusCode === 200) {
-      console.log(body)
       if (body.success) {
         callback(null, body.delegate)
       } else {
@@ -219,11 +218,37 @@ var getBalance = function (address, callback) {
   })
 }
 
+/**
+ * Return total lisk forged for a given public key
+ * 
+ */
+var getForgedLisksUser = function (generatorPublicKey, callback) {
+  var data = {
+    generatorPublicKey: generatorPublicKey
+  }
+  request.get({
+    url: api + '/delegates/forging/getForgedByAccount',
+    qs: data,
+    json: true
+  }, function (err, res, body) {
+    if (!err && res.statusCode === 200) {
+      if (body.success) {
+        callback(null, body)
+      } else {
+        callback(new Error('API returned success = false !'))
+      }
+    } else {
+      callback(new Error('Error contacting API !'))
+    }
+  })
+}
+
 module.exports = {
   getAccount,
   getTxsFromTo,
   getAmountFromTo,
   getBalance,
   getDelegate,
-  checkConfirmation
+  checkConfirmation,
+  getForgedLisksUser
 }

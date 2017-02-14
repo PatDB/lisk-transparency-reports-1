@@ -98,18 +98,6 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
  
 }])
 
-// -----------------------------
-// Controller for the report Page
-// -----------------------------
-app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
-  //Got it in param from the url
-  let userToDisplayReport = $routeParams.param1
-
-  AuthFactory.getUserh(userToDisplayReport, function(res) {
-    $scope.delegate = res
-  })
-}])
-
 
 // ----------------------------------------
 // Controller for the Delegates Display Page
@@ -127,11 +115,32 @@ app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$session
 app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', function($scope, $location, AuthFactory, $sessionStorage) {
   //Got it in param from the url
   let userToDisplayReport = $sessionStorage.currentUser.delegate
+  let userPublickey
+  AuthFactory.getUserh(userToDisplayReport, function(res) {
+    $scope.delegate = res
+    userPublickey = res.publicKey
+
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res2) {
+        $scope.totalForgedLisksForUser = res2
+    })
+  })
   
+  
+}])
+
+
+// -----------------------------
+// Controller for the report Page
+// -----------------------------
+app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
+  //Got it in param from the url
+  let userToDisplayReport = $routeParams.param1
+
   AuthFactory.getUserh(userToDisplayReport, function(res) {
     $scope.delegate = res
   })
 }])
+
 
 app.run(function ($rootScope, $location, $http, $sessionStorage) {
   if (typeof $sessionStorage.currentUser !== 'undefined') {

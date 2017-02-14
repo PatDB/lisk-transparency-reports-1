@@ -35,10 +35,14 @@ module.exports = function (app) {
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
 
-  // Route to get all active delegates
+  // Get all active delegates from the DB
   authRoutes.get('/getDelegates', AuthHelper.getAllUsers)
 
+  // Get a particular delegate informations from the lisk API
   authRoutes.get('/getDelegate', AuthHelper.getUser)
+
+  // Get the forged lisks amount from the lisk API
+  authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
   // ==========================
   // Addresses Routes
   // ==========================

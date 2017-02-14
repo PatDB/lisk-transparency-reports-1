@@ -121,9 +121,9 @@ const getAllUsers = function (req, res, next) {
     })
   })
 }
-// ---------------------------------------
-// Call for get Delegate from the Lisk api
-// ---------------------------------------
+// ---------------------
+// Get user informations
+// ---------------------
 const getUser = function (req, res, next) {
   let username= req.query.username
 
@@ -131,7 +131,7 @@ const getUser = function (req, res, next) {
       if (err) {
         return res.status(422).send({
           success: false,
-          error: 'This delegate do not exist'
+          error: 'This delegate does not exist'
         })
       }else{
         return res.status(200).send(delegate)
@@ -294,6 +294,22 @@ const roleAuthorization = function (role) {
   }
 }
 
+const getForgedLisks = function (req, res, next) {
+  let publicKey = req.query.publicKey
+
+  blockchain.getForgedLisksUser(publicKey, function (err, total) {
+    if(err) {
+      return res.status(422).send({
+        success: false,
+        error: 'This public key does not exist'
+      })
+    }else{
+      return res.status(200).send(total)
+    }
+  })
+}
+
+
 module.exports = {
   register,
   login,
@@ -302,5 +318,6 @@ module.exports = {
   amount,
   confirm,
   generateToken,
-  roleAuthorization
+  roleAuthorization,
+  getForgedLisks
 }
