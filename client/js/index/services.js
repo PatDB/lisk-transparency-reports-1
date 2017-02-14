@@ -33,7 +33,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     })
       .then(function (res) {
         // register successful
-        if (res.status === 200) {
+        if (res.status === 200 || res.status === 201) {
           callback(res.status)
 
           $sessionStorage.currentUser = {
@@ -42,7 +42,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
           }
 
           $http.defaults.headers.common.Authorization = res.data.token
-        } else {
+       } else {
           callback(res)
         }
       }).catch(function (e) {

@@ -23,7 +23,7 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
       return
     }
     AuthFactory.Register($scope.register.delegate, $scope.register.password, function (res) {
-      if (res === 200) {
+      if (res === 200 || res === 201) {
         $location.path('/verify')
       } else {
         SweetAlert.swal('Error', res.data.error, 'error')
