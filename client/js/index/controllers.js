@@ -93,9 +93,7 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
         }
       }
     })
-  }
-
- 
+  } 
 }])
 
 
@@ -105,8 +103,7 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
 app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   AuthFactory.displayAll(function (res) {
     $scope.delegates = res
-  })
-  
+  })  
 }])
 
 
@@ -125,6 +122,10 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSt
         $scope.totalForgedLisksForUser = res
     })
   })
+
+  $scope.saveAddress = function () {
+    
+  } 
   
   
 }])
