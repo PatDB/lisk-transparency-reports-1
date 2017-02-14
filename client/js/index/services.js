@@ -50,8 +50,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
+  /* Function to get all delegates names from DB */
   function displayAll (callback) {
-    $http.get('/api/auth/test1')
+    $http.get('/api/auth/getDelegates')
       .then(function (res) {
         if (res.status === 200) {
           callback(res.data.allUsers)
@@ -62,11 +63,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         callback(e)
       })
   }
+  /* Function that'll extract all informations of a delegate from 
+  the Lisk API */
   function getUserh (username, callback) {
-    console.log(username)
-     /*$http.get('/api/auth/getDelegate', {
-       username: username
-     })*/
      $http({
           url: '/api/auth/getDelegate', 
           method: 'GET',

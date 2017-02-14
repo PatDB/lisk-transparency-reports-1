@@ -121,12 +121,12 @@ const getAllUsers = function (req, res, next) {
     })
   })
 }
-
+// ---------------------------------------
+// Call for get Delegate from the Lisk api
+// ---------------------------------------
 const getUser = function (req, res, next) {
-  //Create here the function to get the userinfos
-  
   let username= req.query.username
-  console.log(username)
+
   blockchain.getDelegate(username, function (err, delegate) {
       if (err) {
         return res.status(422).send({

@@ -1,9 +1,17 @@
+// ------------------
+// Index Controller
+// ------------------
+
 app.controller('IndexCtrl', ['$scope', '$location', 'AuthFactory', function ($scope, $location, AuthFactory) {
   AuthFactory.Token(function (token) {
     $scope.test = token
   })
 }])
 
+
+// ------------------------
+// Authentication Controller
+// ------------------------
 app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFactory', 'SweetAlert', function ($scope, $location, $sessionStorage, AuthFactory, SweetAlert) {
   $scope.register = function () {
     if (!$scope.register.delegate || !$scope.register.password || !$scope.register.rpassword) {
@@ -43,6 +51,9 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
   }
 }])
 
+// ------------------------
+// Top Menu Controller
+// ------------------------
 app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($scope, $location, AuthFactory) {
   $scope.logout = function () {
     AuthFactory.Logout()
@@ -54,6 +65,9 @@ app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($
   }
 }])
 
+// -----------------------------------
+// Controller for the verification Page
+// -----------------------------------
 app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   AuthFactory.Amount(function (res) {
     $scope.test = res
@@ -84,20 +98,38 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
  
 }])
 
-
+// -----------------------------
+// Controller for the report Page
+// -----------------------------
 app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
   //Got it in param from the url
   let userToDisplayReport = $routeParams.param1
-  console.log(userToDisplayReport)
+
   AuthFactory.getUserh(userToDisplayReport, function(res) {
-    $scope.test = res
+    $scope.delegate = res
   })
 }])
 
 
+// ----------------------------------------
+// Controller for the Delegates Display Page
+// ----------------------------------------
 app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   AuthFactory.displayAll(function (res) {
-    $scope.test2 = res
+    $scope.delegates = res
+  })
+}])
+
+
+// ----------------------------------------
+// Controller for the profile Page
+// ----------------------------------------
+app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', function($scope, $location, AuthFactory, $sessionStorage) {
+  //Got it in param from the url
+  let userToDisplayReport = $sessionStorage.currentUser.delegate
+  
+  AuthFactory.getUserh(userToDisplayReport, function(res) {
+    $scope.delegate = res
   })
 }])
 

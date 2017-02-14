@@ -36,7 +36,7 @@ module.exports = function (app) {
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
 
   // Route to get all active delegates
-  authRoutes.get('/test1', AuthHelper.getAllUsers)
+  authRoutes.get('/getDelegates', AuthHelper.getAllUsers)
 
   authRoutes.get('/getDelegate', AuthHelper.getUser)
   // ==========================

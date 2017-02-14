@@ -20,4 +20,8 @@ app.config(['$routeProvider', function ($routeProvider) {
     templateUrl: 'templates/report.html',
     controller: 'ReportCtrl'
   })
+  .when('/profile', {
+    templateUrl: 'templates/profile.html',
+    controller: 'ProfileCtrl'
+  })
 }])
