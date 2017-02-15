@@ -154,3 +154,26 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
   }
 })
 
+
+
+app.factory('AddressFactory', function ($http, $sessionStorage) {
+  function Add (address, category, callback) {
+    $http.post('/api/addresses/add', {
+      address: address,
+      category: category
+    })
+      .then(function (res) {
+        if(res.status === 200) {
+          callback(res)
+        }else{
+          callback(res)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  return {
+    Add
+  }
+})
