@@ -22,7 +22,7 @@ module.exports = function (app) {
   // Auth Routes
   // ==========================
   apiRoutes.use('/auth', authRoutes)
-
+  
   // Registration route
   authRoutes.post('/register', AuthHelper.register)
 
