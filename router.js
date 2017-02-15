@@ -58,6 +58,9 @@ module.exports = function (app) {
   // Delete address route
   addrRoutes.delete('/remove', requireAuth, AddrHelper.remove)
 
+  // Get addresses of a user
+  addrRoutes.get('/getAddresses', AddrHelper.getAddresses)
+
   // ==========================
   // Report Routes
   // ==========================

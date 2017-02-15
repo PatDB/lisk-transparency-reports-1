@@ -29,12 +29,9 @@
 <hr>
 <p>
     <b>Forge</b> : {{ delegate.address }}<br>
-    <b>Donations:</b><br>
-    <b>Servers:</b><br>
-    <b>Personal:</b><br>
-    <b>Holding:</b><br>
-    <b>Marketing:</b><br>
-    <b>Unknown:</b><br>
+<div ng-repeat="a in addresses">
+    <b>{{ a.category }} : </b> {{ a.address }}
+</div>
 </p>
 
 <br>
