@@ -3,6 +3,29 @@ const blockchain = require('./blockchain')
 const config = require('../config/main')
 
 // --------------------
+// Get addresses route
+// --------------------
+const get = function (req, res, next) {
+  let delegate = req.query.delegate
+
+  user.findOne({ delegate: delegate }, function (err, delegate) {
+    if (err) {
+      res.status(422).json({
+        error: 'Can\'t find this user'
+      })
+      return next(err)
+    }
+    if (req.query.address) {
+      console.log(delegate.profile)
+    } else {
+      res.status(200).json(
+      delegate.profile.addresses
+    )
+    }
+  })
+}
+
+// --------------------
 // Add address route
 // --------------------
 const add = function (req, res, next) {
@@ -169,24 +192,9 @@ const remove = function (req, res, next) {
   })
 }
 
-const getAddresses = function (req, res, next) {
-  let delegate = req.query.delegate
-
-  user.findOne({ delegate: delegate }, function (err, delegate) {
-    if (err) {
-      res.status(422).json({
-        error: 'Can\'t find this user'
-      })
-      return next(err)
-    }
-    res.status(200).json(
-      delegate.profile.addresses
-    )
-  })
-}
 module.exports = {
   add,
   confirm,
   remove,
-  getAddresses
+  get
 }

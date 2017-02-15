@@ -50,16 +50,16 @@ module.exports = function (app) {
   apiRoutes.use('/addresses', addrRoutes)
 
   // Generate aleatory amount to send route
-  addrRoutes.post('/add', requireAuth, AddrHelper.add)
+  addrRoutes.post('/', requireAuth, AddrHelper.add)
 
   // Verify transaction route
-  addrRoutes.post('/confirm', requireAuth, AddrHelper.confirm)
+  addrRoutes.put('/', requireAuth, AddrHelper.confirm)
 
   // Delete address route
-  addrRoutes.delete('/remove', requireAuth, AddrHelper.remove)
+  addrRoutes.delete('/', requireAuth, AddrHelper.remove)
 
   // Get addresses of a user
-  addrRoutes.get('/getAddresses', AddrHelper.getAddresses)
+  addrRoutes.get('/', AddrHelper.get)
 
   // ==========================
   // Report Routes
