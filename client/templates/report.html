@@ -31,8 +31,28 @@
     <b>Forge</b> : {{ delegate.address }}<br>
 <div ng-repeat="a in addresses">
     <b>{{ a.category }} : </b> {{ a.address }}
+    <span ng-if='a.confirmed'>
+        (Confirmed)
+    </span>
+    <span ng-if='!a.confirmed'>
+        (Unconfirmed) 
+    </span>
 </div>
 </p>
-
 <br>
+
+<h3>REPORT</h3>
+<hr>
+<h4>Total Donations to Users/Funds/Projects : 0 LSK</h4>
+<b>Total donations to Users</b> : 0 LSK
+<b>Total donations to Projects</b> : 0 LSK
+<b>Total donation to Lisk Community Fund</b> : 0 LSK
+
+<h4>Reserve for future Donations to Users/Funds/Projects : 0 LSK </h4>
+
+<h4>Sold/Expenses: 0 LSK</h4>
+
+<h4>Longterm Holding : 0 LSK </h4>
+
+<h4>Lisk Eco-System Contributions</h4>
 </div>

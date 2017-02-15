@@ -179,8 +179,6 @@ const getAddresses = function (req, res, next) {
       })
       return next(err)
     }
-
-    console.log(delegate.profile.addresses)
     res.status(200).json(
       delegate.profile.addresses
     )

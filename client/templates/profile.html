@@ -38,8 +38,15 @@
 <br>
 
 <b>Forge</b> : {{ delegate.address }}
+
 <div ng-repeat="a in addresses">
-    <b>{{ a.category }} : </b> {{ a.address }}
+    <b>{{ a.category }} : </b> {{ a.address }}   
+    <span ng-if='a.confirmed'>
+        (Confirmed)
+    </span>
+    <span ng-if='!a.confirmed'>
+        (Unconfirmed) 
+    </span>
 </div>
 
 <br>
