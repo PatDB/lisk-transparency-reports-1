@@ -124,13 +124,14 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
   })
 
   $scope.saveAddress = function () {
-    if (!$scope.address || !$scope.category) {
+    if (!$scope.newAddress || !$scope.newCategory) {
       SweetAlert.swal('Error', 'Please fill all the fields', 'error')
       return
     }
-    AddressFactory.Add($scope.address, $scope.category, function (res) {
+    AddressFactory.Add($scope.newAddress, $scope.newCategory, function (res) {
       if (res.status === 200 || res.status === 201) {
         SweetAlert.swal('Done', 'Your address has been saved', 'success')
+        $scope.newAddress = ''
         AddressFactory.getAddresses($sessionStorage.currentUser.delegate, function (res) {
           $scope.addresses = res
         })
