@@ -33,7 +33,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     })
       .then(function (res) {
         // register successful
-        if (res.status === 200 || res.status === 201) {
+        if (res.status === 201) {
           callback(res.status)
 
           $sessionStorage.currentUser = {
@@ -160,7 +160,7 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
       category: category
     })
       .then(function (res) {
-        if (res.status === 200) {
+        if (res.status === 201) {
           callback(res)
         } else {
           callback(res)

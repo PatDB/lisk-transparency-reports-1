@@ -30,7 +30,7 @@ const add = function (req, res, next) {
           })
           return next(err)
         }
-        res.status(200).json({
+        res.status(201).json({
           success: true
         })
       })
