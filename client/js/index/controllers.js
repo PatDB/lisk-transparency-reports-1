@@ -117,6 +117,9 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
 
     AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
       $scope.totalForgedLisksForUser = res
+      $scope.totalForgedLisksForUser.fees = res.fees / 10000000
+      $scope.totalForgedLisksForUser.rewards = res.rewards / 10000000
+      $scope.totalForgedLisksForUser.forged = res.forged / 10000000
     })
   })
 
@@ -156,6 +159,9 @@ app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactor
 
     AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
       $scope.totalForgedLisksForUser = res
+      $scope.totalForgedLisksForUser.fees = res.fees / 10000000
+      $scope.totalForgedLisksForUser.rewards = res.rewards / 10000000
+      $scope.totalForgedLisksForUser.forged = res.forged / 10000000
     })
     AddressFactory.getAddresses(userToDisplayReport, function (res) {
       $scope.addresses = res
