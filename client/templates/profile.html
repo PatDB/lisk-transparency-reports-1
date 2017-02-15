@@ -1,0 +1,43 @@
+<div>
+<h3>DELEGATE INFORMATIONS</h3>
+<hr>
+<p>
+    <b>Username</b> : {{ delegate.username }}<br>
+    <b>Address</b> : {{ delegate.address }}<br>
+    <b>Public Key</b> : {{ delegate.publicKey }}<br>
+    <b>Vote</b> : {{ delegate.vote }}<br>
+    <b>Produced Blocks</b> : {{ delegate.producedblocks }}<br>
+    <b>Missed Blocks</b> : {{ delegate.missedblocks }}<br>
+    <b>Rate</b> : {{ delegate.rate }}<br>
+    <b>Approval</b> : {{ delegate.approval }}<br>
+    <b>Productivity</b> : {{ delegate.productivity }}<br>
+</p>
+<br>
+
+<h3>LISKS FORGED</h3>
+<hr>
+<p>
+    <b>Fees</b> : {{ totalForgedLisksForUser.fees }}<br>
+    <b>Rewards</b> : {{ totalForgedLisksForUser.rewards }}<br>
+    <b>Forged</b> : {{ totalForgedLisksForUser.forged }}<br>
+</p>
+
+<br>
+<h3>ADDRESSES</h3>
+<hr>
+<select ng-model="category">
+    <option value='Donations'>Donations</option>
+    <option value='Servers'>Server Maintenance</option>
+    <option value='Personal'>Personal funds</option>
+    <option value='Holding'>Holding</option>
+    <option value='Marketing'>Marketing</option>
+    <option value='Unknown'>Other</option>
+</select>
+    <input type="text" id="addr" ng-model="address" />
+    <button ng-click="saveAddress()">Save</button>
+<br>
+<p>
+<b>Forge</b> : {{ delegate.address }}
+</p>
+<br>
+</div>

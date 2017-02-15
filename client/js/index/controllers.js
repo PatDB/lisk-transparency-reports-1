@@ -1,9 +1,17 @@
+// ------------------
+// Index Controller
+// ------------------
+
 app.controller('IndexCtrl', ['$scope', '$location', 'AuthFactory', function ($scope, $location, AuthFactory) {
   AuthFactory.Token(function (token) {
     $scope.test = token
   })
 }])
 
+
+// ------------------------
+// Authentication Controller
+// ------------------------
 app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFactory', 'SweetAlert', function ($scope, $location, $sessionStorage, AuthFactory, SweetAlert) {
   $scope.register = function () {
     if (!$scope.register.delegate || !$scope.register.password || !$scope.register.rpassword) {
@@ -15,7 +23,7 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
       return
     }
     AuthFactory.Register($scope.register.delegate, $scope.register.password, function (res) {
-      if (res === 200) {
+      if (res === 200 || res === 201) {
         $location.path('/verify')
       } else {
         SweetAlert.swal('Error', res.data.error, 'error')
@@ -43,6 +51,9 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
   }
 }])
 
+// ------------------------
+// Top Menu Controller
+// ------------------------
 app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($scope, $location, AuthFactory) {
   $scope.logout = function () {
     AuthFactory.Logout()
@@ -54,6 +65,9 @@ app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($
   }
 }])
 
+// -----------------------------------
+// Controller for the verification Page
+// -----------------------------------
 app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   AuthFactory.Amount(function (res) {
     $scope.test = res
@@ -79,8 +93,70 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
         }
       }
     })
-  }
+  } 
 }])
+
+
+// ----------------------------------------
+// Controller for the Delegates Display Page
+// ----------------------------------------
+app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
+  AuthFactory.displayAll(function (res) {
+    $scope.delegates = res
+  })  
+}])
+
+
+// ----------------------------------------
+// Controller for the profile Page
+// ----------------------------------------
+app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+  //Got it in param from the url
+  let userToDisplayReport = $sessionStorage.currentUser.delegate
+  let userPublickey
+  AuthFactory.getUserh(userToDisplayReport, function(res) {
+    $scope.delegate = res
+    userPublickey = res.publicKey
+
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res) {
+        $scope.totalForgedLisksForUser = res
+    })
+  })
+  
+  $scope.saveAddress = function () {
+    if (!$scope.address || !$scope.category) {
+      SweetAlert.swal('Error', 'Please fill all the fields', 'error')
+      return
+    }
+    AddressFactory.Add($scope.address, $scope.category, function (res) {
+      if (res.status === 200 || res.status === 201) {
+        SweetAlert.swal('Done', 'Your address has been saved', 'success')       
+      } else {
+        SweetAlert.swal('Error', res.data.error, 'error')
+      }
+    })
+  } 
+}])
+
+
+// -----------------------------
+// Controller for the report Page
+// -----------------------------
+app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
+  //Got it in param from the url
+  let userToDisplayReport = $routeParams.param1
+  let userPublickey
+
+  AuthFactory.getUserh(userToDisplayReport, function(res) {
+    $scope.delegate = res
+    userPublickey = res.publicKey
+
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res) {
+        $scope.totalForgedLisksForUser = res
+    })
+  })
+}])
+
 
 app.run(function ($rootScope, $location, $http, $sessionStorage) {
   if (typeof $sessionStorage.currentUser !== 'undefined') {

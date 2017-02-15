@@ -12,4 +12,16 @@ app.config(['$routeProvider', function ($routeProvider) {
     templateUrl: 'templates/verify.html',
     controller: 'VerifyCtrl'
   })
+  .when('/delegates', {
+    templateUrl: 'templates/delegates.html',
+    controller: 'DelegatesCtrl'
+  })
+  .when('/report/:param1', {
+    templateUrl: 'templates/report.html',
+    controller: 'ReportCtrl'
+  })
+  .when('/profile', {
+    templateUrl: 'templates/profile.html',
+    controller: 'ProfileCtrl'
+  })
 }])

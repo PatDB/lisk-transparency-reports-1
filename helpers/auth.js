@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const blockchain = require('../helpers/blockchain')
-
+var request = require('request')
+var api = require('../config/main').api
 const User = require('../models/User')
 const config = require('../config/main')
 
@@ -101,6 +102,42 @@ const login = function (req, res, next) {
       token: 'JWT ' + generateToken(userInfo),
       confirmed: foundUser.confirmed
     })
+  })
+}
+
+
+// --------------------
+// Display All delegates
+// --------------------
+
+const getAllUsers = function (req, res, next) {
+  User.find(function (err, users) {
+    if (err) {
+      res.status(500).json({
+        error: 'Bonjour France.'
+      })
+      return next(err)
+    }
+    res.status(200).json({
+      allUsers: users
+    })
+  })
+}
+// ---------------------
+// Get user informations
+// ---------------------
+const getUser = function (req, res, next) {
+  let username= req.query.username
+
+  blockchain.getDelegate(username, function (err, delegate) {
+      if (err) {
+        return res.status(422).send({
+          success: false,
+          error: 'This delegate does not exist'
+        })
+      }else{
+        return res.status(200).send(delegate)
+      }
   })
 }
 
@@ -259,11 +296,30 @@ const roleAuthorization = function (role) {
   }
 }
 
+const getForgedLisks = function (req, res, next) {
+  let publicKey = req.query.publicKey
+
+  blockchain.getForgedLisksUser(publicKey, function (err, total) {
+    if(err) {
+      return res.status(422).send({
+        success: false,
+        error: 'This public key does not exist'
+      })
+    }else{
+      return res.status(200).send(total)
+    }
+  })
+}
+
+
 module.exports = {
   register,
   login,
+  getAllUsers,
+  getUser,  
   amount,
   confirm,
   generateToken,
-  roleAuthorization
+  roleAuthorization,
+  getForgedLisks
 }
