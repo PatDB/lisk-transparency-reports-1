@@ -36,8 +36,11 @@
     <input type="text" id="addr" ng-model="address" />
     <button ng-click="saveAddress()">Save</button>
 <br>
-<p>
+
 <b>Forge</b> : {{ delegate.address }}
-</p>
+<div ng-repeat="a in addresses">
+    <b>{{ a.category }} : </b> {{ a.address }}
+</div>
+
 <br>
 </div>

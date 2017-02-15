@@ -8,7 +8,6 @@ app.controller('IndexCtrl', ['$scope', '$location', 'AuthFactory', function ($sc
   })
 }])
 
-
 // ------------------------
 // Authentication Controller
 // ------------------------
@@ -93,9 +92,8 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
         }
       }
     })
-  } 
+  }
 }])
-
 
 // ----------------------------------------
 // Controller for the Delegates Display Page
@@ -103,26 +101,25 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
 app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   AuthFactory.displayAll(function (res) {
     $scope.delegates = res
-  })  
+  })
 }])
-
 
 // ----------------------------------------
 // Controller for the profile Page
 // ----------------------------------------
-app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
-  //Got it in param from the url
+app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+  // Got it in param from the url
   let userToDisplayReport = $sessionStorage.currentUser.delegate
   let userPublickey
-  AuthFactory.getUserh(userToDisplayReport, function(res) {
+  AuthFactory.getUserh(userToDisplayReport, function (res) {
     $scope.delegate = res
     userPublickey = res.publicKey
 
-    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res) {
-        $scope.totalForgedLisksForUser = res
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
+      $scope.totalForgedLisksForUser = res
     })
   })
-  
+
   $scope.saveAddress = function () {
     if (!$scope.address || !$scope.category) {
       SweetAlert.swal('Error', 'Please fill all the fields', 'error')
@@ -130,33 +127,41 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
     }
     AddressFactory.Add($scope.address, $scope.category, function (res) {
       if (res.status === 200 || res.status === 201) {
-        SweetAlert.swal('Done', 'Your address has been saved', 'success')       
+        SweetAlert.swal('Done', 'Your address has been saved', 'success')
+        AddressFactory.getAddresses($sessionStorage.currentUser.delegate, function (res) {
+          $scope.addresses = res
+        })
       } else {
         SweetAlert.swal('Error', res.data.error, 'error')
       }
     })
-  } 
-}])
+  }
 
+  AddressFactory.getAddresses($sessionStorage.currentUser.delegate, function (res) {
+    $scope.addresses = res
+  })
+}])
 
 // -----------------------------
 // Controller for the report Page
 // -----------------------------
-app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', '$sessionStorage', function($scope, $location, $routeParams, AuthFactory, $sessionStorage) {
-  //Got it in param from the url
+app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', 'AddressFactory', '$sessionStorage', function ($scope, $location, $routeParams, AuthFactory, AddressFactory, $sessionStorage) {
+  // Got it in param from the url
   let userToDisplayReport = $routeParams.param1
   let userPublickey
 
-  AuthFactory.getUserh(userToDisplayReport, function(res) {
+  AuthFactory.getUserh(userToDisplayReport, function (res) {
     $scope.delegate = res
     userPublickey = res.publicKey
 
-    AuthFactory.getTotalLisksForgedForUser(userPublickey, function(res) {
-        $scope.totalForgedLisksForUser = res
+    AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
+      $scope.totalForgedLisksForUser = res
+    })
+    AddressFactory.getAddresses(userToDisplayReport, function (res) {
+      $scope.addresses = res
     })
   })
 }])
-
 
 app.run(function ($rootScope, $location, $http, $sessionStorage) {
   if (typeof $sessionStorage.currentUser !== 'undefined') {

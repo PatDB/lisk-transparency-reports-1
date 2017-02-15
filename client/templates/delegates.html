@@ -1,6 +1,6 @@
 <div>
-    <div ng-repeat="item in delegates">      
-      <p><b>Delegate : <a ng-href="#/report/{{ item.delegate }}">{{ item.delegate }}</a></b><br>
-      Forge Id : {{ item.profile.forge }}</p> 
+    <div ng-repeat="d in delegates">      
+      <p><b>Delegate : <a ng-href="#/report/{{ d.delegate }}">{{ d.delegate }}</a></b><br>
+      Forge Id : {{ d.profile.forge }}</p> 
     </div>
   </div>

@@ -169,8 +169,26 @@ const remove = function (req, res, next) {
   })
 }
 
+const getAddresses = function (req, res, next) {
+  let delegate = req.query.delegate
+
+  user.findOne({ delegate: delegate }, function (err, delegate) {
+    if (err) {
+      res.status(422).json({
+        error: 'Can\'t find this user'
+      })
+      return next(err)
+    }
+
+    console.log(delegate.profile.addresses)
+    res.status(200).json(
+      delegate.profile.addresses
+    )
+  })
+}
 module.exports = {
   add,
   confirm,
-  remove
+  remove,
+  getAddresses
 }
