@@ -220,7 +220,7 @@ var getBalance = function (address, callback) {
 
 /**
  * Return total lisk forged for a given public key
- * 
+ *
  */
 var getForgedLisksUser = function (generatorPublicKey, callback) {
   var data = {

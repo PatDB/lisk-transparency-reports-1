@@ -22,7 +22,7 @@ module.exports = function (app) {
   // Auth Routes
   // ==========================
   apiRoutes.use('/auth', authRoutes)
-  
+
   // Registration route
   authRoutes.post('/register', AuthHelper.register)
 
@@ -44,7 +44,6 @@ module.exports = function (app) {
   // Get the forged lisks amount from the lisk API
   authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
 
-
   // ==========================
   // Addresses Routes
   // ==========================
@@ -62,8 +61,6 @@ module.exports = function (app) {
   // ==========================
   // Report Routes
   // ==========================
-
-  
 
   // Set url for API group routes
   app.use('/api', apiRoutes)

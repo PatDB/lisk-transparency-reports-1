@@ -105,7 +105,6 @@ const login = function (req, res, next) {
   })
 }
 
-
 // --------------------
 // Display All delegates
 // --------------------
@@ -127,17 +126,17 @@ const getAllUsers = function (req, res, next) {
 // Get user informations
 // ---------------------
 const getUser = function (req, res, next) {
-  let username= req.query.username
+  let username = req.query.username
 
   blockchain.getDelegate(username, function (err, delegate) {
-      if (err) {
-        return res.status(422).send({
-          success: false,
-          error: 'This delegate does not exist'
-        })
-      }else{
-        return res.status(200).send(delegate)
-      }
+    if (err) {
+      return res.status(422).send({
+        success: false,
+        error: 'This delegate does not exist'
+      })
+    } else {
+      return res.status(200).send(delegate)
+    }
   })
 }
 
@@ -300,23 +299,22 @@ const getForgedLisks = function (req, res, next) {
   let publicKey = req.query.publicKey
 
   blockchain.getForgedLisksUser(publicKey, function (err, total) {
-    if(err) {
+    if (err) {
       return res.status(422).send({
         success: false,
         error: 'This public key does not exist'
       })
-    }else{
+    } else {
       return res.status(200).send(total)
     }
   })
 }
 
-
 module.exports = {
   register,
   login,
   getAllUsers,
-  getUser,  
+  getUser,
   amount,
   confirm,
   generateToken,
