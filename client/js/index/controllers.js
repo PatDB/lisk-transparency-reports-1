@@ -110,7 +110,7 @@ app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$session
 // ----------------------------------------
 // Controller for the profile Page
 // ----------------------------------------
-app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', function($scope, $location, AuthFactory, $sessionStorage) {
+app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
   //Got it in param from the url
   let userToDisplayReport = $sessionStorage.currentUser.delegate
   let userPublickey
@@ -122,11 +122,21 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSt
         $scope.totalForgedLisksForUser = res
     })
   })
-
+  /*
   $scope.saveAddress = function () {
-    
-  } 
-  
+    if (!$scope.address || !$scope.category) {
+      SweetAlert.swal('Error', 'Please fill all the fields', 'error')
+      return
+    }
+    AuthFactory.saveAddress($sessionStorage.currentUser.delegate, $scope.address, $scope.category, function (res) {
+      if (res === 200 || res === 201) {
+        SweetAlert.swal('Done', 'Your address has been saved', 'Ok')
+      } else {
+        SweetAlert.swal('Error', res.data.error, 'error')
+      }
+    })
+  }
+  */
   
 }])
 

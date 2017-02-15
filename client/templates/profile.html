@@ -1,5 +1,5 @@
 <div>
-<h2>MY PROFILE </h2>
+<h3>DELEGATE INFORMATIONS</h3>
 <hr>
 <p>
     <b>Username</b> : {{ delegate.username }}<br>
@@ -14,7 +14,7 @@
 </p>
 <br>
 
-<h3>LISKS FORGED BY THE ACCOUNT</h3>
+<h3>LISKS FORGED</h3>
 <hr>
 <p>
     <b>Fees</b> : {{ totalForgedLisksForUser.fees }}<br>
@@ -25,24 +25,19 @@
 <br>
 <h3>ADDRESSES</h3>
 <hr>
-    <label for="addr1"><b>Donations</b></label><br>
-    <input type="text" id="paddr1" ng-model="addr1" />
+<select ng-model="category">
+    <option value='Donations'>Donations</option>
+    <option value='Servers'>Server Maintenance</option>
+    <option value='Personal'>Personal funds</option>
+    <option value='Holding'>Holding</option>
+    <option value='Marketing'>Marketing</option>
+    <option value='Unknown'>Other</option>
+</select>
+    <input type="text" id="addr" ng-model="address" />
     <button ng-click="saveAddress()">Save</button>
 <br>
-    <label for="addr2"><b>Server Maintenance</b></label><br>
-    <input type="text" id="paddr2" ng-model="addr2" />
-    <button ng-click="saveAddress()">Save</button>
+<p>
+<b>Forge</b> : {{ delegate.address }}
+</p>
 <br>
-    <label for="addr3"><b>Personal funds</b></label><br>
-    <input type="text" id="paddr3" ng-model="addr3" />
-    <button ng-click="saveAddress()">Save</button>
-<br>
-    <label for="addr4"><b>Holding</b></label><br>
-    <input type="text" id="paddr4" ng-model="addr4" />
-    <button ng-click="saveAddress()">Save</button>
-<br>
-    <label for="addr5"><b>Marketing</b></label><br>
-    <input type="text" id="paddr5" ng-model="addr5" />
-    <button ng-click="saveAddress()">Save</button>    
-<hr>
 </div>

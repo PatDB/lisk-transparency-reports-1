@@ -10,7 +10,7 @@ const AddressSchema = new Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Holding', 'Donations', 'Personal', 'Servers', 'Unknown']
+    enum: ['Holding', 'Donations', 'Personal', 'Servers', 'Unknown', 'Marketing']
   },
   confirmed: {
     type: Boolean,

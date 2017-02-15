@@ -43,6 +43,8 @@ module.exports = function (app) {
 
   // Get the forged lisks amount from the lisk API
   authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
+
+
   // ==========================
   // Addresses Routes
   // ==========================

@@ -1,5 +1,8 @@
 <div>
-<h2>Report of {{ delegate.username }} </h2>
+<h2>{{ delegate.username }} REPORT</h2>
+
+<h3>DELEGATE INFORMATIONS</h3>
+<hr>
 <p>
     <b>Username</b> : {{ delegate.username }}<br>
     <b>Address</b> : {{ delegate.address }}<br>
@@ -11,11 +14,28 @@
     <b>Approval</b> : {{ delegate.approval }}<br>
     <b>Productivity</b> : {{ delegate.productivity }}<br>
 </p>
+<br>
 
+<h3>LISKS FORGED</h3>
+<hr>
 <p>
-    <b>Total Fees</b> : {{ totalForgedLisksForUser.fees }}<br>
-    <b>Total Rewards</b> : {{ totalForgedLisksForUser.rewards }}<br>
-    <b>Total Forged</b> : {{ totalForgedLisksForUser.forged }}<br>
+    <b>Fees</b> : {{ totalForgedLisksForUser.fees }}<br>
+    <b>Rewards</b> : {{ totalForgedLisksForUser.rewards }}<br>
+    <b>Forged</b> : {{ totalForgedLisksForUser.forged }}<br>
 </p>
 
+<br>
+<h3>ADDRESSES</h3>
+<hr>
+<p>
+    <b>Forge</b> : {{ delegate.address }}<br>
+    <b>Donations:</b><br>
+    <b>Servers:</b><br>
+    <b>Personal:</b><br>
+    <b>Holding:</b><br>
+    <b>Marketing:</b><br>
+    <b>Unknown:</b><br>
+</p>
+
+<br>
 </div>
