@@ -6,22 +6,37 @@ const config = require('../config/main')
 // Get addresses route
 // --------------------
 const get = function (req, res, next) {
-  let delegate = req.query.delegate
+  let toReturnAddr = []
 
-  user.findOne({ delegate: delegate }, function (err, delegate) {
-    if (err) {
+  user.findOne({
+    delegate: req.query.delegate
+  }, function (err, delegate) {
+    if (err || !delegate) {
       res.status(422).json({
         error: 'Can\'t find this user'
       })
       return next(err)
     }
     if (req.query.address) {
-      console.log(delegate.profile)
-    } else {
-      res.status(200).json(
-      delegate.profile.addresses
-    )
+      delegate.profile.addresses.forEach(function (address) {
+        if (address.address === req.query.address) {
+          toReturnAddr.push(address)
+        }
+      }, this)
     }
+    if (req.query.category) {
+      delegate.profile.addresses.forEach(function (address) {
+        if (address.category === req.query.category) {
+          toReturnAddr.push(address)
+        }
+      }, this)
+    }
+    if (!req.query.address && !req.query.category) {
+      toReturnAddr = delegate.profile.addresses
+    }
+    res.status(200).json(
+      toReturnAddr
+    )
   })
 }
 
