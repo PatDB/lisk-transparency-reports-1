@@ -32,6 +32,8 @@ module.exports = function (app) {
   // Generate aleatory amount to send route
   authRoutes.get('/amount', requireAuth, AuthHelper.amount)
 
+  authRoutes.get('/amountdelegate', AuthHelper.amountdelegate)
+
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
 
@@ -44,6 +46,10 @@ module.exports = function (app) {
   // Get the forged lisks amount from the lisk API
   authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
 
+  // Reset the password
+  authRoutes.post('/reset', AuthHelper.reset)
+
+  authRoutes.post('/updatepassword', AuthHelper.updatepassword)
   // ==========================
   // Addresses Routes
   // ==========================

@@ -26,6 +26,35 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
+  // Function to reset the password
+  function Reset (delegate, callback) {
+      /*
+        This function will update a new Amount for the user, when it's done, the user
+        goes on a page (resetPassword.html). The page'll look like :
+        Delegate : nohope
+        Amount : 0.2548
+        Transaction ID: 123456789101112L
+        new Password : ********
+        Confirm new Password : *********
+        [Create new Password]
+        Create new Password will just update the current password in the database only if the amount is the same
+        in the same in the transaction and in the db.
+        easy.
+      */
+    $http.post('/api/auth/reset', {
+      delegate: delegate.toLowerCase()
+    })
+      .then(function (res) {
+        if (res.status === 200 || res.status === 201) {
+          callback(res)
+        } else {
+          callback(res)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
   function Register (delegate, password, callback) {
     $http.post('/api/auth/register', {
       delegate: delegate.toLowerCase(),
@@ -44,6 +73,23 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
           $http.defaults.headers.common.Authorization = res.data.token
         } else {
           callback(res)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function updatePassword (delegate, password, callback) {
+    $http.post('/api/auth/updatepassword', {
+      delegate: delegate.toLowerCase(),
+      password: password
+    })
+      .then(function (res) {
+        // update successful
+        if (res.status === 200 || res.status === 201) {
+          callback(res.status)
+        } else {
+          callback(res.status)
         }
       }).catch(function (e) {
         callback(e)
@@ -112,6 +158,23 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         callback(e)
       })
   }
+  function AmountDelegate (delegate, callback) {
+    $http({
+      url: '/api/auth/amountdelegate',
+      method: 'GET',
+      params: {delegate: delegate}
+    })
+      .then(function (res) {
+        // register successful
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
 
   function Confirm (txId, callback) {
     $http.post('/api/auth/confirm', {
@@ -142,11 +205,14 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
 
   return {
     Register,
+    updatePassword,
     Login,
+    Reset,
     displayAll,
     getUserh,
     getTotalLisksForgedForUser,
     Amount,
+    AmountDelegate,
     Confirm,
     Logout,
     Token

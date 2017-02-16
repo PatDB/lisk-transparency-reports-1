@@ -105,6 +105,54 @@ const login = function (req, res, next) {
   })
 }
 
+// ----------------------
+// Reset password
+// ----------------------
+const reset = function (req, res, next) {
+  let delegate = req.body.delegate
+  let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+  console.log(delegate)
+  User.findOne({ delegate: delegate }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'User not found'
+      })
+    }
+    /* NOW HAVE TO UPDATE THE AMOUNT THAT HAS TO BE VERIFIED */
+    // save the bear
+    console.log(foundUser)
+    foundUser.confirmAmount = amount
+    foundUser.save(function (err, newUser) {
+      if (err) {
+        return next(err)
+      }
+      return res.status(200).send(amount)
+    })
+
+    /* THEN REDIRECT TO THE RESETPASSWORD PAGE */
+  })
+}
+
+const updatepassword = function (req, res, next) {
+  let delegate = req.body.delegate
+  let password = req.body.password
+  User.findOne({ delegate: delegate }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+    foundUser.password = password
+    foundUser.save(function (err, newUser) {
+      if (err) {
+        return next(err)
+      }
+      return res.status(200)
+    })
+  })
+}
+
 // --------------------
 // Display All delegates
 // --------------------
@@ -189,6 +237,23 @@ const amount = function (req, res, next) {
       res.status(200).json({
         confirmed: true
       })
+    }
+  })
+}
+
+// New amount function that takes delegate as parameter
+const amountdelegate = function (req, res, next) {
+  // Get user
+  let delegate = req.query.delegate
+  User.findOne({ delegate: delegate }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+    if (foundUser.confirmAmount) {
+      res.status(200).json({amount: foundUser.confirmAmount})
     }
   })
 }
@@ -313,9 +378,12 @@ const getForgedLisks = function (req, res, next) {
 module.exports = {
   register,
   login,
+  reset,
+  updatepassword,
   getAllUsers,
   getUser,
   amount,
+  amountdelegate,
   confirm,
   generateToken,
   roleAuthorization,
