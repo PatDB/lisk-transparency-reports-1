@@ -11,11 +11,17 @@ const get = function (req, res, next) {
   user.findOne({
     delegate: req.query.delegate
   }, function (err, delegate) {
-    if (err || !delegate) {
-      res.status(422).json({
-        error: 'Can\'t find this user'
+    if (err) {
+      return next({
+        status: 500,
+        message: err
       })
-      return next(err)
+    }
+    if (!delegate) {
+      return next({
+        status: 422,
+        message: 'Can\'t find this delegate'
+      })
     }
     if (req.query.address) {
       delegate.profile.addresses.forEach(function (address) {
@@ -50,10 +56,16 @@ const add = function (req, res, next) {
 
   user.findById(req.user._id, function (err, foundUser) {
     if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
+      return next({
+        status: 500,
+        message: err
       })
-      return next(err)
+    }
+    if (!foundUser) {
+      return next({
+        status: 422,
+        message: 'Can\'t find this delegate'
+      })
     } else {
       foundUser.profile.addresses.push({
         address: address,
@@ -61,12 +73,18 @@ const add = function (req, res, next) {
         confirmAmount: amount
       })
 
-      foundUser.save(function (err, updateduser) {
+      foundUser.save(function (err, updatedUser) {
         if (err) {
-          res.status(422).json({
-            error: 'Error saving user to DB.'
+          return next({
+            status: 500,
+            message: err
           })
-          return next(err)
+        }
+        if (!updatedUser) {
+          return next({
+            status: 422,
+            message: 'Error saving user to DB.'
+          })
         }
         res.status(201).json({
           success: true
@@ -88,10 +106,16 @@ const confirm = function (req, res, next) {
   // Get user
   user.findById(req.user._id, function (err, foundUser) {
     if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
+      return next({
+        status: 500,
+        message: err
       })
-      return next(err)
+    }
+    if (foundUser) {
+      return next({
+        status: 422,
+        message: 'Can\'t find this delegate'
+      })
     }
 
     // Check if address is present in user profile
@@ -111,8 +135,9 @@ const confirm = function (req, res, next) {
         if (txId) {
           blockchain.checkConfirmation(address.address, config.address, txId, address.confirmAmount, function (err, confirmed) {
             if (err) {
-              res.status(422).json({
-                error: 'An error occured trying to verify tx.'
+              return next({
+                status: 500,
+                message: err
               })
             } else {
               // If tx received
@@ -122,10 +147,10 @@ const confirm = function (req, res, next) {
                 // Save the user document
                 foundUser.save(function (err, updateduser) {
                   if (err) {
-                    res.status(422).json({
-                      error: 'Error saving user to DB.'
+                    return next({
+                      status: 500,
+                      message: 'Error saving user to DB.'
                     })
-                    return next(err)
                   }
                   res.status(200).json({
                     address: address.address,
@@ -155,8 +180,9 @@ const confirm = function (req, res, next) {
         })
       }
     } else {
-      res.status(422).json({
-        error: 'Address not found in your profile.'
+      return next({
+        status: 422,
+        message: 'Address not found for given delegate.'
       })
     }
   })
@@ -171,10 +197,10 @@ const remove = function (req, res, next) {
   // Get user
   user.findById(req.user._id, function (err, foundUser) {
     if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
+      return next({
+        status: 422,
+        message: 'Can\'t find this delegate'
       })
-      return next(err)
     }
 
     // Check if address is present in user profile
@@ -185,14 +211,14 @@ const remove = function (req, res, next) {
       }
     }
 
-    // If address is present in user profile
+    // If address is removed from local document, save it
     if (removed) {
       foundUser.save(function (err, updateduser) {
         if (err) {
-          res.status(422).json({
-            error: 'Error saving user to DB.'
+          return next({
+            status: 500,
+            message: 'Error saving user to DB.'
           })
-          return next(err)
         }
         res.status(200).json({
           address: req.body.address,
@@ -200,8 +226,9 @@ const remove = function (req, res, next) {
         })
       })
     } else {
-      res.status(422).json({
-        error: 'Address not found in your profile.'
+      return next({
+        status: 422,
+        message: 'Address not found for given delegate.'
       })
     }
   })
