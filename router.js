@@ -46,10 +46,12 @@ module.exports = function (app) {
   // Get the forged lisks amount from the lisk API
   authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
 
-  // Reset the password
-  authRoutes.post('/reset', AuthHelper.reset)
+  // Init the password reseting process
+  authRoutes.post('/initResetPassword', AuthHelper.initResetPassword)
 
-  authRoutes.post('/updatepassword', AuthHelper.updatepassword)
+  // Reset password
+  authRoutes.post('/resetPassword', AuthHelper.resetPassword)
+
   // ==========================
   // Addresses Routes
   // ==========================

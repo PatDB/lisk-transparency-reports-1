@@ -173,11 +173,9 @@ app.controller('ResetCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory
       SweetAlert.swal('Error', 'Please fill all the fields', 'error')
       return
     }
-    AuthFactory.Reset($scope.reset.delegate, function (res) {
-      if (res.status === 200) {
-        /* REDIRECT HERE TO THE PAGE OF RESET PASSWORD */
-        let url = '/resetpassword/' + $scope.reset.delegate
-        $location.path(url)
+    AuthFactory.initResetPassword($scope.reset.delegate, function (success) {
+      if (success) {
+        $location.path('/resetpassword/' + $scope.reset.delegate)
       } else {
         SweetAlert.swal('Error', 'Error during process, please try again or contact the keymaster or the oracle.', 'error')
       }
@@ -202,25 +200,16 @@ app.controller('ResetPasswordCtrl', ['$scope', '$location', '$routeParams', 'Aut
       SweetAlert.swal('Error', 'The passwords are not the same', 'error')
       return
     }
-    AuthFactory.Confirm($scope.txId, function (err, data) {
+    AuthFactory.resetPassword(delegate, $scope.txId, $scope.newPassword, function (err, success) {
       if (err) {
-        SweetAlert.swal('Error', 'Transaction not found.', 'error')
+        SweetAlert.swal('Error', 'Unknown error.', 'error')
       } else {
-        if (data.confirmed) {
+        if (success) {
           SweetAlert.swal({
-            title: 'Account confirmed !',
+            title: 'Password reset successful !',
             type: 'success'
           }, function () {
             $location.path('/')
-            // $sessionStorage.currentUser.confirmed = true
-            /* Also change the password to the new password */
-            AuthFactory.updatePassword(delegate, $scope.newPassword, function (res) {
-              if (res === 200 || res === 201) {
-                $location.path('/')
-              } else {
-                SweetAlert.swal('Error', res.data.error, 'error')
-              }
-            })
           })
         } else {
           SweetAlert.swal('Error', 'This transaction do not match above details.', 'error')
@@ -249,3 +238,4 @@ app.run(function ($rootScope, $location, $http, $sessionStorage) {
     }
   })
 })
+

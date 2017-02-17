@@ -26,35 +26,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
-  // Function to reset the password
-  function Reset (delegate, callback) {
-      /*
-        This function will update a new Amount for the user, when it's done, the user
-        goes on a page (resetPassword.html). The page'll look like :
-        Delegate : nohope
-        Amount : 0.2548
-        Transaction ID: 123456789101112L
-        new Password : ********
-        Confirm new Password : *********
-        [Create new Password]
-        Create new Password will just update the current password in the database only if the amount is the same
-        in the same in the transaction and in the db.
-        easy.
-      */
-    $http.post('/api/auth/reset', {
-      delegate: delegate.toLowerCase()
-    })
-      .then(function (res) {
-        if (res.status === 200 || res.status === 201) {
-          callback(res)
-        } else {
-          callback(res)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
   function Register (delegate, password, callback) {
     $http.post('/api/auth/register', {
       delegate: delegate.toLowerCase(),
@@ -79,20 +50,38 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
-  function updatePassword (delegate, password, callback) {
-    $http.post('/api/auth/updatepassword', {
-      delegate: delegate.toLowerCase(),
-      password: password
+  // Function to reset the password
+  function initResetPassword (delegate, callback) {
+    $http.post('/api/auth/initResetPassword', {
+      delegate: delegate.toLowerCase()
     })
       .then(function (res) {
-        // update successful
-        if (res.status === 200 || res.status === 201) {
-          callback(res.status)
+        console.log(res)
+        if (res.status === 201 && res.data.success === true) {
+          callback(true)
         } else {
-          callback(res.status)
+          callback(false)
         }
       }).catch(function (e) {
         callback(e)
+      })
+  }
+
+  function resetPassword (delegate, txId, password, callback) {
+    $http.post('/api/auth/resetPassword', {
+      delegate: delegate.toLowerCase(),
+      txId: txId,
+      password: password
+    })
+      .then(function (res) {
+        console.log(res)
+        if (res.status === 200) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      }).catch(function (err) {
+        callback(err)
       })
   }
 
@@ -115,7 +104,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     $http({
       url: '/api/auth/getDelegate',
       method: 'GET',
-      params: {username: username}
+      params: {
+        username: username
+      }
     })
       .then(function (res) {
         if (res.status === 200) {
@@ -132,7 +123,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     $http({
       url: '/api/auth/getForgedLisks',
       method: 'GET',
-      params: {publicKey: publicKey}
+      params: {
+        publicKey: publicKey
+      }
     })
       .then(function (res) {
         if (res.status === 200) {
@@ -158,11 +151,14 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         callback(e)
       })
   }
+
   function AmountDelegate (delegate, callback) {
     $http({
       url: '/api/auth/amountdelegate',
       method: 'GET',
-      params: {delegate: delegate}
+      params: {
+        delegate: delegate
+      }
     })
       .then(function (res) {
         // register successful
@@ -205,9 +201,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
 
   return {
     Register,
-    updatePassword,
     Login,
-    Reset,
+    initResetPassword,
+    resetPassword,
     displayAll,
     getUserh,
     getTotalLisksForgedForUser,
@@ -240,7 +236,9 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
     $http({
       url: '/api/addresses/getAddresses',
       method: 'GET',
-      params: {delegate: delegate}
+      params: {
+        delegate: delegate
+      }
     })
       .then(function (res) {
         if (res.status === 200) {

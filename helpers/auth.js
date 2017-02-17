@@ -105,54 +105,6 @@ const login = function (req, res, next) {
   })
 }
 
-// ----------------------
-// Reset password
-// ----------------------
-const reset = function (req, res, next) {
-  let delegate = req.body.delegate
-  let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
-  console.log(delegate)
-  User.findOne({ delegate: delegate }, function (err, foundUser) {
-    if (err) {
-      res.status(422).json({
-        error: 'User not found'
-      })
-    }
-    /* NOW HAVE TO UPDATE THE AMOUNT THAT HAS TO BE VERIFIED */
-    // save the bear
-    console.log(foundUser)
-    foundUser.confirmAmount = amount
-    foundUser.save(function (err, newUser) {
-      if (err) {
-        return next(err)
-      }
-      return res.status(200).send(amount)
-    })
-
-    /* THEN REDIRECT TO THE RESETPASSWORD PAGE */
-  })
-}
-
-const updatepassword = function (req, res, next) {
-  let delegate = req.body.delegate
-  let password = req.body.password
-  User.findOne({ delegate: delegate }, function (err, foundUser) {
-    if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
-      })
-      return next(err)
-    }
-    foundUser.password = password
-    foundUser.save(function (err, newUser) {
-      if (err) {
-        return next(err)
-      }
-      return res.status(200)
-    })
-  })
-}
-
 // --------------------
 // Display All delegates
 // --------------------
@@ -170,6 +122,7 @@ const getAllUsers = function (req, res, next) {
     })
   })
 }
+
 // ---------------------
 // Get user informations
 // ---------------------
@@ -245,7 +198,9 @@ const amount = function (req, res, next) {
 const amountdelegate = function (req, res, next) {
   // Get user
   let delegate = req.query.delegate
-  User.findOne({ delegate: delegate }, function (err, foundUser) {
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
     if (err) {
       res.status(422).json({
         error: 'No user was found.'
@@ -253,7 +208,9 @@ const amountdelegate = function (req, res, next) {
       return next(err)
     }
     if (foundUser.confirmAmount) {
-      res.status(200).json({amount: foundUser.confirmAmount})
+      res.status(200).json({
+        amount: foundUser.confirmAmount
+      })
     }
   })
 }
@@ -314,12 +271,99 @@ const confirm = function (req, res, next) {
         // If userAmount wasn't already generated
       } else {
         res.status(200).json({
-          error: 'You first need to generate amount: GET /api/auth/amount'
+          error: 'You first need to generate amount. See the API docs for more informations.'
         })
       }
     } else {
       res.status(200).json({
         confirmed: true
+      })
+    }
+  })
+}
+
+// ----------------------
+// Init reset password
+// ----------------------
+const initResetPassword = function (req, res, next) {
+  let delegate = req.body.delegate
+  let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+  console.log(delegate)
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'User not found'
+      })
+    }
+    /* NOW HAVE TO UPDATE THE AMOUNT THAT HAS TO BE VERIFIED */
+    // save the bear
+    foundUser.confirmAmount = amount
+    foundUser.save(function (err, newUser) {
+      if (err) {
+        return next(err)
+      }
+      res.status(201).json({
+        success: true
+      })
+    })
+
+    /* THEN REDIRECT TO THE RESETPASSWORD PAGE */
+  })
+}
+
+// --------------------
+// Reset password route
+// --------------------
+const resetPassword = function (req, res, next) {
+  let txId = req.body.txId
+  let delegate = req.body.delegate
+  let password = req.body.password
+
+  // Get delegate
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+
+    // If userAmount was already generated
+    if (foundUser.confirmAmount) {
+      // Check tx in blockchain
+      blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
+        if (err) {
+          res.status(500).json({
+            error: 'An error occured trying to verify tx.'
+          })
+          return next(err)
+        } else {
+          // If tx received
+          if (confirmed) {
+            foundUser.password = password
+            foundUser.save(function (err, newUser) {
+              if (err) {
+                return next(err)
+              }
+              return res.status(200).send()
+            })
+          } else {
+            // res the amount to send stored in DB
+            res.status(422).json({
+              success: false
+            })
+          }
+        }
+      })
+
+      // If userAmount wasn't already generated
+    } else {
+      res.status(200).json({
+        error: 'You first need to generate amount. See the API docs for more informations.'
       })
     }
   })
@@ -378,8 +422,8 @@ const getForgedLisks = function (req, res, next) {
 module.exports = {
   register,
   login,
-  reset,
-  updatepassword,
+  initResetPassword,
+  resetPassword,
   getAllUsers,
   getUser,
   amount,
