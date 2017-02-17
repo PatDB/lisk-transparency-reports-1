@@ -369,6 +369,24 @@ const resetPassword = function (req, res, next) {
   })
 }
 
+// ----------------------
+// Get forged Lisk route
+// ----------------------
+const getForgedLisks = function (req, res, next) {
+  let publicKey = req.query.publicKey
+
+  blockchain.getForgedLisksUser(publicKey, function (err, total) {
+    if (err) {
+      return res.status(422).send({
+        success: false,
+        error: 'This public key does not exist'
+      })
+    } else {
+      return res.status(200).send(total)
+    }
+  })
+}
+
 // --------------------
 // Functions
 // --------------------
@@ -404,21 +422,6 @@ const roleAuthorization = function (role) {
   }
 }
 
-const getForgedLisks = function (req, res, next) {
-  let publicKey = req.query.publicKey
-
-  blockchain.getForgedLisksUser(publicKey, function (err, total) {
-    if (err) {
-      return res.status(422).send({
-        success: false,
-        error: 'This public key does not exist'
-      })
-    } else {
-      return res.status(200).send(total)
-    }
-  })
-}
-
 module.exports = {
   register,
   login,
@@ -429,7 +432,7 @@ module.exports = {
   amount,
   amountdelegate,
   confirm,
+  getForgedLisks,
   generateToken,
-  roleAuthorization,
-  getForgedLisks
+  roleAuthorization
 }

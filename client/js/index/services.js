@@ -50,7 +50,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
-  // Function to reset the password
   function initResetPassword (delegate, callback) {
     $http.post('/api/auth/initResetPassword', {
       delegate: delegate.toLowerCase()
@@ -98,6 +97,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         callback(e)
       })
   }
+
   /* Function that'll extract all informations of a delegate from
   the Lisk API */
   function getUserh (username, callback) {

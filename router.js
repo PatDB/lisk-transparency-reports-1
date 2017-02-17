@@ -3,7 +3,6 @@ const passport = require('passport')
 const passportConfig = require('./config/passport')
 
 const AuthHelper = require('./helpers/auth')
-const ReportHelper = require('./helpers/blockchain')
 const AddrHelper = require('./helpers/addresses')
 
 // Middlewares to require login/auth
@@ -14,7 +13,6 @@ module.exports = function (app) {
   // Initialize route groups
   const apiRoutes = express.Router()
   const authRoutes = express.Router()
-  const reportRoutes = express.Router()
   const addrRoutes = express.Router()
   const index = require('./routes/index')
 
