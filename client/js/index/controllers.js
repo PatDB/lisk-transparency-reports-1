@@ -71,9 +71,6 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
   AuthFactory.Amount(function (res) {
     $scope.test = res
   })
-
-  console.log($sessionStorage.currentUser.confirmed)
-
   $scope.verify = function () {
     AuthFactory.Confirm($scope.txId, function (err, data) {
       if (err) {
@@ -170,6 +167,59 @@ app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactor
   })
 }])
 
+app.controller('ResetCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, $routeParams, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+  $scope.reset = function () {
+    if (!$scope.reset.delegate) {
+      SweetAlert.swal('Error', 'Please fill all the fields', 'error')
+      return
+    }
+    AuthFactory.initResetPassword($scope.reset.delegate, function (success) {
+      if (success) {
+        $location.path('/resetpassword/' + $scope.reset.delegate)
+      } else {
+        SweetAlert.swal('Error', 'Error during process, please try again or contact the keymaster or the oracle.', 'error')
+      }
+    })
+  }
+}])
+
+app.controller('ResetPasswordCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, $routeParams, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+  let delegate = $routeParams.param1
+
+  $scope.delegate = delegate
+  AuthFactory.resetPasswordAmount(delegate, function (res) {
+    $scope.amount = res.amount
+    $scope.address = res.address
+  })
+
+  $scope.verify = function () {
+    if (!$scope.newPassword || !$scope.newConfirmedPassword || !$scope.txId) {
+      SweetAlert.swal('Error', 'Please fill all the fields', 'error')
+      return
+    }
+    if ($scope.newPassword !== $scope.newConfirmedPassword) {
+      SweetAlert.swal('Error', 'The passwords are not the same', 'error')
+      return
+    }
+    AuthFactory.resetPassword(delegate, $scope.txId, $scope.newPassword, function (err, success) {
+      if (err) {
+        SweetAlert.swal('Error', 'Unknown error.', 'error')
+      } else {
+        if (success) {
+          SweetAlert.swal({
+            title: 'Password reset successful !',
+            type: 'success'
+          }, function () {
+            $location.path('/')
+          })
+        } else {
+          SweetAlert.swal('Error', 'This transaction do not match above details.', 'error')
+        }
+      }
+    })
+  }
+}])
+
 app.run(function ($rootScope, $location, $http, $sessionStorage) {
   if (typeof $sessionStorage.currentUser !== 'undefined') {
     $http.defaults.headers.common.Authorization = $sessionStorage.currentUser.token
@@ -178,14 +228,15 @@ app.run(function ($rootScope, $location, $http, $sessionStorage) {
   $rootScope.$on('$routeChangeStart', function (event, next, current) {
     if (!$sessionStorage.currentUser || !$sessionStorage.currentUser.token) {
       // no logged user, we should be going to #auth
-      if (next.templateUrl !== 'templates/auth.html') {
+      if (next.templateUrl !== 'templates/auth.html' && next.templateUrl !== 'templates/reset.html' && next.templateUrl !== 'templates/resetpassword.html') {
         // not going to #auth, we should redirect now
         $location.path('/auth')
       }
     } else {
-      if (next.templateUrl === 'templates/auth.html') {
+      if (next.templateUrl === 'templates/auth.html' || next.templateUrl === 'templates/reset.html' || next.templateUrl === 'templates/resetpassword.html') {
         $location.path('/')
       }
     }
   })
 })
+

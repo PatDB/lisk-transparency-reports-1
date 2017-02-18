@@ -24,4 +24,12 @@ app.config(['$routeProvider', function ($routeProvider) {
     templateUrl: 'templates/profile.html',
     controller: 'ProfileCtrl'
   })
+  .when('/reset', {
+    templateUrl: 'templates/reset.html',
+    controller: 'ResetCtrl'
+  })
+  .when('/resetpassword/:param1', {
+    templateUrl: 'templates/resetpassword.html',
+    controller: 'ResetPasswordCtrl'
+  })
 }])

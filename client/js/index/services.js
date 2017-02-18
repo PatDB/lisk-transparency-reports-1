@@ -50,6 +50,40 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
+  function initResetPassword (delegate, callback) {
+    $http.post('/api/auth/initResetPassword', {
+      delegate: delegate.toLowerCase()
+    })
+      .then(function (res) {
+        console.log(res)
+        if (res.status === 201 && res.data.success === true) {
+          callback(true)
+        } else {
+          callback(false)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function resetPassword (delegate, txId, password, callback) {
+    $http.post('/api/auth/resetPassword', {
+      delegate: delegate.toLowerCase(),
+      txId: txId,
+      password: password
+    })
+      .then(function (res) {
+        console.log(res)
+        if (res.status === 200) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      }).catch(function (err) {
+        callback(err)
+      })
+  }
+
   /* Function to get all delegates names from DB */
   function displayAll (callback) {
     $http.get('/api/auth/getDelegates')
@@ -63,13 +97,16 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         callback(e)
       })
   }
+
   /* Function that'll extract all informations of a delegate from
   the Lisk API */
   function getUserh (username, callback) {
     $http({
       url: '/api/auth/getDelegate',
       method: 'GET',
-      params: {username: username}
+      params: {
+        username: username
+      }
     })
       .then(function (res) {
         if (res.status === 200) {
@@ -86,7 +123,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     $http({
       url: '/api/auth/getForgedLisks',
       method: 'GET',
-      params: {publicKey: publicKey}
+      params: {
+        publicKey: publicKey
+      }
     })
       .then(function (res) {
         if (res.status === 200) {
@@ -101,6 +140,26 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
 
   function Amount (callback) {
     $http.get('/api/auth/amount')
+      .then(function (res) {
+        // register successful
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function resetPasswordAmount (delegate, callback) {
+    $http({
+      url: '/api/auth/resetPasswordAmount',
+      method: 'GET',
+      params: {
+        delegate: delegate
+      }
+    })
       .then(function (res) {
         // register successful
         if (res.status === 200) {
@@ -143,10 +202,13 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
   return {
     Register,
     Login,
+    initResetPassword,
+    resetPassword,
     displayAll,
     getUserh,
     getTotalLisksForgedForUser,
     Amount,
+    resetPasswordAmount,
     Confirm,
     Logout,
     Token
@@ -174,7 +236,9 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
     $http({
       url: '/api/addresses/getAddresses',
       method: 'GET',
-      params: {delegate: delegate}
+      params: {
+        delegate: delegate
+      }
     })
       .then(function (res) {
         if (res.status === 200) {

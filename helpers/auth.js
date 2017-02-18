@@ -122,6 +122,7 @@ const getAllUsers = function (req, res, next) {
     })
   })
 }
+
 // ---------------------
 // Get user informations
 // ---------------------
@@ -143,7 +144,7 @@ const getUser = function (req, res, next) {
 // --------------------
 // Amount route
 // --------------------
-const amount = function (req, res, next) {
+const confirmAmount = function (req, res, next) {
   // Get user
   User.findById(req.user._id, function (err, foundUser) {
     if (err) {
@@ -188,6 +189,47 @@ const amount = function (req, res, next) {
     } else {
       res.status(200).json({
         confirmed: true
+      })
+    }
+  })
+}
+
+// New amount function that takes delegate as parameter
+const resetPasswordAmount = function (req, res, next) {
+  // Get user
+  let delegate = req.query.delegate
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+    if (foundUser.resetPasswordAmount) {
+      res.status(200).json({
+        amount: foundUser.resetPasswordAmount,
+        address: config.address
+      })
+    } else {
+      // Generate new amount
+      let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+      // Store it in user document
+      foundUser.resetPasswordAmount = amount
+
+      // Save the user document
+      foundUser.save(function (err, updatedUser) {
+        if (err) {
+          res.status(422).json({
+            error: 'Error saving user to DB.'
+          })
+          return next(err)
+        }
+        res.status(200).json({
+          amount: amount,
+          address: config.address
+        })
       })
     }
   })
@@ -249,13 +291,118 @@ const confirm = function (req, res, next) {
         // If userAmount wasn't already generated
       } else {
         res.status(200).json({
-          error: 'You first need to generate amount: GET /api/auth/amount'
+          error: 'You first need to generate amount. See the API docs for more informations.'
         })
       }
     } else {
       res.status(200).json({
         confirmed: true
       })
+    }
+  })
+}
+
+// ----------------------
+// Init reset password
+// ----------------------
+const initResetPassword = function (req, res, next) {
+  let delegate = req.body.delegate
+  let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+  console.log(delegate)
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'User not found'
+      })
+    }
+    /* NOW HAVE TO UPDATE THE AMOUNT THAT HAS TO BE VERIFIED */
+    // save the bear
+    foundUser.confirmAmount = amount
+    foundUser.save(function (err, newUser) {
+      if (err) {
+        return next(err)
+      }
+      res.status(201).json({
+        success: true
+      })
+    })
+
+    /* THEN REDIRECT TO THE RESETPASSWORD PAGE */
+  })
+}
+
+// --------------------
+// Reset password route
+// --------------------
+const resetPassword = function (req, res, next) {
+  let txId = req.body.txId
+  let delegate = req.body.delegate
+  let password = req.body.password
+
+  // Get delegate
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'No user was found.'
+      })
+      return next(err)
+    }
+
+    // If userAmount was already generated
+    if (foundUser.resetPasswordAmount) {
+      // Check tx in blockchain
+      blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
+        if (err) {
+          res.status(500).json({
+            error: 'An error occured trying to verify tx.'
+          })
+          return next(err)
+        } else {
+          // If tx received
+          if (confirmed) {
+            foundUser.password = password
+            foundUser.save(function (err, newUser) {
+              if (err) {
+                return next(err)
+              }
+              return res.status(200).send()
+            })
+          } else {
+            // res the amount to send stored in DB
+            res.status(422).json({
+              success: false
+            })
+          }
+        }
+      })
+
+      // If userAmount wasn't already generated
+    } else {
+      res.status(200).json({
+        error: 'You first need to generate amount. See the API docs for more informations.'
+      })
+    }
+  })
+}
+
+// ----------------------
+// Get forged Lisk route
+// ----------------------
+const getForgedLisks = function (req, res, next) {
+  let publicKey = req.query.publicKey
+
+  blockchain.getForgedLisksUser(publicKey, function (err, total) {
+    if (err) {
+      return res.status(422).send({
+        success: false,
+        error: 'This public key does not exist'
+      })
+    } else {
+      return res.status(200).send(total)
     }
   })
 }
@@ -295,29 +442,17 @@ const roleAuthorization = function (role) {
   }
 }
 
-const getForgedLisks = function (req, res, next) {
-  let publicKey = req.query.publicKey
-
-  blockchain.getForgedLisksUser(publicKey, function (err, total) {
-    if (err) {
-      return res.status(422).send({
-        success: false,
-        error: 'This public key does not exist'
-      })
-    } else {
-      return res.status(200).send(total)
-    }
-  })
-}
-
 module.exports = {
   register,
   login,
+  initResetPassword,
+  resetPassword,
   getAllUsers,
   getUser,
-  amount,
+  confirmAmount,
+  resetPasswordAmount,
   confirm,
+  getForgedLisks,
   generateToken,
-  roleAuthorization,
-  getForgedLisks
+  roleAuthorization
 }
