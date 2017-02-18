@@ -152,9 +152,9 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
-  function AmountDelegate (delegate, callback) {
+  function resetPasswordAmount (delegate, callback) {
     $http({
-      url: '/api/auth/amountdelegate',
+      url: '/api/auth/resetPasswordAmount',
       method: 'GET',
       params: {
         delegate: delegate
@@ -208,7 +208,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     getUserh,
     getTotalLisksForgedForUser,
     Amount,
-    AmountDelegate,
+    resetPasswordAmount,
     Confirm,
     Logout,
     Token

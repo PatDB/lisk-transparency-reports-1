@@ -187,8 +187,9 @@ app.controller('ResetPasswordCtrl', ['$scope', '$location', '$routeParams', 'Aut
   let delegate = $routeParams.param1
 
   $scope.delegate = delegate
-  AuthFactory.AmountDelegate(delegate, function (res) {
+  AuthFactory.resetPasswordAmount(delegate, function (res) {
     $scope.amount = res.amount
+    $scope.address = res.address
   })
 
   $scope.verify = function () {

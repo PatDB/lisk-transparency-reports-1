@@ -27,10 +27,11 @@ module.exports = function (app) {
   // Login route
   authRoutes.post('/login', requireLogin, AuthHelper.login)
 
-  // Generate aleatory amount to send route
-  authRoutes.get('/amount', requireAuth, AuthHelper.amount)
+  // Generate / return aleatory amount to send route
+  authRoutes.get('/amount', requireAuth, AuthHelper.confirmAmount)
 
-  authRoutes.get('/amountdelegate', AuthHelper.amountdelegate)
+  // Return amount to send
+  authRoutes.get('/resetPasswordAmount', AuthHelper.resetPasswordAmount)
 
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)

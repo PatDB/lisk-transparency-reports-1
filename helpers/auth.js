@@ -144,7 +144,7 @@ const getUser = function (req, res, next) {
 // --------------------
 // Amount route
 // --------------------
-const amount = function (req, res, next) {
+const confirmAmount = function (req, res, next) {
   // Get user
   User.findById(req.user._id, function (err, foundUser) {
     if (err) {
@@ -195,7 +195,7 @@ const amount = function (req, res, next) {
 }
 
 // New amount function that takes delegate as parameter
-const amountdelegate = function (req, res, next) {
+const resetPasswordAmount = function (req, res, next) {
   // Get user
   let delegate = req.query.delegate
   User.findOne({
@@ -207,9 +207,29 @@ const amountdelegate = function (req, res, next) {
       })
       return next(err)
     }
-    if (foundUser.confirmAmount) {
+    if (foundUser.resetPasswordAmount) {
       res.status(200).json({
-        amount: foundUser.confirmAmount
+        amount: foundUser.resetPasswordAmount,
+        address: config.address
+      })
+    } else {
+      // Generate new amount
+      let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+      // Store it in user document
+      foundUser.resetPasswordAmount = amount
+
+      // Save the user document
+      foundUser.save(function (err, updatedUser) {
+        if (err) {
+          res.status(422).json({
+            error: 'Error saving user to DB.'
+          })
+          return next(err)
+        }
+        res.status(200).json({
+          amount: amount,
+          address: config.address
+        })
       })
     }
   })
@@ -333,9 +353,9 @@ const resetPassword = function (req, res, next) {
     }
 
     // If userAmount was already generated
-    if (foundUser.confirmAmount) {
+    if (foundUser.resetPasswordAmount) {
       // Check tx in blockchain
-      blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
+      blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
         if (err) {
           res.status(500).json({
             error: 'An error occured trying to verify tx.'
@@ -429,8 +449,8 @@ module.exports = {
   resetPassword,
   getAllUsers,
   getUser,
-  amount,
-  amountdelegate,
+  confirmAmount,
+  resetPasswordAmount,
   confirm,
   getForgedLisks,
   generateToken,
