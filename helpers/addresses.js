@@ -98,10 +98,9 @@ const add = function (req, res, next) {
 // Confirm address route
 // ---------------------
 const confirm = function (req, res, next) {
+  let address, pos
   let txId = req.body.txId
   let addressFound = false
-  let address = []
-  let pos
 
   // Get user
   user.findById(req.user._id, function (err, foundUser) {
