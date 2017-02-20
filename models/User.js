@@ -50,6 +50,13 @@ const UserSchema = new Schema({
   },
   confirmAmount: {
     type: Number
+  },
+  resetPasswordAmount: {
+    type: Number
+  },
+  activated: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

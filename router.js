@@ -3,7 +3,6 @@ const passport = require('passport')
 const passportConfig = require('./config/passport')
 
 const AuthHelper = require('./helpers/auth')
-const ReportHelper = require('./helpers/blockchain')
 const AddrHelper = require('./helpers/addresses')
 
 // Middlewares to require login/auth
@@ -14,7 +13,6 @@ module.exports = function (app) {
   // Initialize route groups
   const apiRoutes = express.Router()
   const authRoutes = express.Router()
-  const reportRoutes = express.Router()
   const addrRoutes = express.Router()
   const index = require('./routes/index')
 
@@ -29,8 +27,11 @@ module.exports = function (app) {
   // Login route
   authRoutes.post('/login', requireLogin, AuthHelper.login)
 
-  // Generate aleatory amount to send route
-  authRoutes.get('/amount', requireAuth, AuthHelper.amount)
+  // Generate / return aleatory amount to send route
+  authRoutes.get('/amount', requireAuth, AuthHelper.confirmAmount)
+
+  // Return amount to send
+  authRoutes.get('/resetPasswordAmount', AuthHelper.resetPasswordAmount)
 
   // Verify transaction route
   authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
@@ -43,6 +44,12 @@ module.exports = function (app) {
 
   // Get the forged lisks amount from the lisk API
   authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
+
+  // Init the password reseting process
+  authRoutes.post('/initResetPassword', AuthHelper.initResetPassword)
+
+  // Reset password
+  authRoutes.post('/resetPassword', AuthHelper.resetPassword)
 
   // ==========================
   // Addresses Routes
