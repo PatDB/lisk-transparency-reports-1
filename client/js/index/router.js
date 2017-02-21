@@ -1,8 +1,8 @@
 app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider
   .when('/', {
-    templateUrl: 'templates/index.html',
-    controller: 'IndexCtrl'
+    templateUrl: 'templates/home.html',
+    controller: 'HomeCtrl'
   })
   .when('/auth', {
     templateUrl: 'templates/auth.html',

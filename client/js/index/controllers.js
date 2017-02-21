@@ -1,17 +1,14 @@
 // ------------------
-// Index Controller
+// Home Controller
 // ------------------
 
-app.controller('IndexCtrl', ['$scope', '$location', 'AuthFactory', function ($scope, $location, AuthFactory) {
-  AuthFactory.Token(function (token) {
-    $scope.test = token
-  })
+app.controller('HomeCtrl', ['$scope', '$location', function ($scope, $location) {
 }])
 
 // ------------------------
 // Authentication Controller
 // ------------------------
-app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFactory', 'SweetAlert', function ($scope, $location, $sessionStorage, AuthFactory, SweetAlert) {
+app.controller('AuthCtrl', ['$scope', '$window', '$location', '$sessionStorage', 'AuthFactory', 'SweetAlert', function ($scope, $window, $location, $sessionStorage, AuthFactory, SweetAlert) {
   $scope.register = function () {
     if (!$scope.register.delegate || !$scope.register.password || !$scope.register.rpassword) {
       SweetAlert.swal('Error', 'Please fill all the fields', 'error')
@@ -22,8 +19,8 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
       return
     }
     AuthFactory.Register($scope.register.delegate, $scope.register.password, function (res) {
-      if (res === 200 || res === 201) {
-        $location.path('/verify')
+      if (res === 201) {
+        $window.location.reload()
       } else {
         SweetAlert.swal('Error', res.data.error, 'error')
       }
@@ -37,11 +34,7 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
     }
     AuthFactory.Login($scope.login.delegate, $scope.login.password, function (res) {
       if (res.status === 200) {
-        if (res.data.confirmed) {
-          $location.path('/')
-        } else {
-          $location.path('/verify')
-        }
+        $window.location.reload()
       } else {
         console.log(res)
         SweetAlert.swal('Error', res.data.error, 'error')
@@ -53,9 +46,12 @@ app.controller('AuthCtrl', ['$scope', '$location', '$sessionStorage', 'AuthFacto
 // ------------------------
 // Top Menu Controller
 // ------------------------
-app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($scope, $location, AuthFactory) {
+app.controller('SidebarCtrl', ['$scope', '$sessionStorage', '$window', '$location', 'AuthFactory', function ($scope, $sessionStorage, $window, $location, AuthFactory) {
+  $scope.connected = ($sessionStorage.currentUser !== undefined && $sessionStorage.currentUser.token !== undefined)
+
   $scope.logout = function () {
     AuthFactory.Logout()
+    $scope.connected = false
     $location.path('/auth')
   }
 
@@ -234,23 +230,3 @@ app.controller('ResetPasswordCtrl', ['$scope', '$location', '$routeParams', 'Aut
     })
   }
 }])
-
-app.run(function ($rootScope, $location, $http, $sessionStorage) {
-  if (typeof $sessionStorage.currentUser !== 'undefined') {
-    $http.defaults.headers.common.Authorization = $sessionStorage.currentUser.token
-  }
-  // register listener to watch route changes
-  $rootScope.$on('$routeChangeStart', function (event, next, current) {
-    if (!$sessionStorage.currentUser || !$sessionStorage.currentUser.token) {
-      // no logged user, we should be going to #auth
-      if (next.templateUrl !== 'templates/auth.html' && next.templateUrl !== 'templates/reset.html' && next.templateUrl !== 'templates/resetpassword.html') {
-        // not going to #auth, we should redirect now
-        $location.path('/auth')
-      }
-    } else {
-      if (next.templateUrl === 'templates/auth.html' || next.templateUrl === 'templates/reset.html' || next.templateUrl === 'templates/resetpassword.html') {
-        $location.path('/')
-      }
-    }
-  })
-})
