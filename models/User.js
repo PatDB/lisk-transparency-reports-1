@@ -10,7 +10,7 @@ const AddressSchema = new Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Holding', 'Donations', 'Personal', 'Servers', 'Unknown', 'Marketing']
+    enum: ['Forge', 'Holding', 'Donations', 'Personal', 'Servers', 'Unknown', 'Marketing']
   },
   confirmed: {
     type: Boolean,
@@ -33,12 +33,7 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  profile: {
-    forge: {
-      type: String
-    },
-    addresses: [AddressSchema]
-  },
+  addresses: [AddressSchema],
   role: {
     type: String,
     enum: ['Delegate', 'Admin'],

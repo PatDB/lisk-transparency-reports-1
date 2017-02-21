@@ -138,20 +138,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       })
   }
 
-  function Amount (callback) {
-    $http.get('/api/auth/amount')
-      .then(function (res) {
-        // register successful
-        if (res.status === 200) {
-          callback(res.data)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
   function resetPasswordAmount (delegate, callback) {
     $http({
       url: '/api/auth/resetPasswordAmount',
@@ -164,22 +150,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         // register successful
         if (res.status === 200) {
           callback(res.data)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
-  function Confirm (txId, callback) {
-    $http.post('/api/auth/confirm', {
-      txId: txId
-    })
-      .then(function (res) {
-        // register successful
-        if (res.status === 200) {
-          callback(null, res.data)
         } else {
           callback(res.status)
         }
@@ -207,9 +177,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     displayAll,
     getUserh,
     getTotalLisksForgedForUser,
-    Amount,
     resetPasswordAmount,
-    Confirm,
     Logout,
     Token
   }
@@ -217,11 +185,12 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
 
 app.factory('AddressFactory', function ($http, $sessionStorage) {
   function Add (address, category, callback) {
-    $http.post('/api/addresses/add', {
+    $http.post('/api/addresses', {
       address: address,
       category: category
     })
       .then(function (res) {
+        console.log(res)
         if (res.status === 201) {
           callback(res)
         } else {
@@ -232,27 +201,84 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
       })
   }
 
-  function getAddresses (delegate, callback) {
-    $http({
-      url: '/api/addresses/getAddresses',
-      method: 'GET',
-      params: {
-        delegate: delegate
-      }
+  function getAddress (delegate, address, callback) {
+    if (!address) {
+      $http({
+        url: '/api/addresses',
+        method: 'GET',
+        params: {
+          delegate: delegate
+        }
+      })
+        .then(function (res) {
+          if (res.status === 200) {
+            callback(res.data)
+          } else {
+            callback(res.status)
+          }
+        }).catch(function (e) {
+          callback(e)
+        })
+    } else {
+      $http({
+        url: '/api/addresses',
+        method: 'GET',
+        params: {
+          delegate: delegate,
+          address: address
+        }
+      })
+        .then(function (res) {
+          if (res.status === 200) {
+            callback(res.data)
+          } else {
+            callback(res.status)
+          }
+        }).catch(function (e) {
+          callback(e)
+        })
+    }
+  }
+
+  function Confirm (address, txId, callback) {
+    $http.put('/api/addresses', {
+      address: address,
+      txId: txId
     })
       .then(function (res) {
+        console.log(res)
+        // register successful
         if (res.status === 200) {
-          callback(res.data)
+          callback(null, res.data)
         } else {
           callback(res.status)
         }
       }).catch(function (e) {
         callback(e)
+        console.log(e)
       })
+  }
+
+  function getToSendAddress (callback) {
+    $http({
+      url: '/api/addresses/getToSendAddress',
+      method: 'GET'
+    })
+        .then(function (res) {
+          if (res.status === 200) {
+            callback(res.data)
+          } else {
+            callback(res.status)
+          }
+        }).catch(function (e) {
+          callback(e)
+        })
   }
 
   return {
     Add,
-    getAddresses
+    getAddress,
+    Confirm,
+    getToSendAddress
   }
 })

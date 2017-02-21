@@ -50,13 +50,14 @@ const register = function (req, res, next) {
         })
       }
 
-      // If email is unique and password was provided, create account
       let user = new User({
         delegate: username,
         password: password,
-        profile: {
-          forge: delegate.address
-        }
+        addresses: [{
+          address: delegate.address,
+          category: 'Forge',
+          confirmAmount: (Math.random().toFixed(4) * 100000000).toFixed(0)
+        }]
       })
 
       user.save(function (err, newUser) {
@@ -156,36 +157,12 @@ const confirmAmount = function (req, res, next) {
     // If user isn't confirmed
     if (!foundUser.confirmed) {
       // If userAmount was already generated
-      if (foundUser.confirmAmount) {
-        // res the amount to send stored in DB
-        res.status(200).json({
-          confirmed: false,
-          amount: foundUser.confirmAmount,
-          address: config.address
-        })
-
-        // If userAmount wasn't already generated
-      } else {
-        // Generate new amount
-        let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
-        // Store it in user document
-        foundUser.confirmAmount = amount
-
-        // Save the user document
-        foundUser.save(function (err, updatedUser) {
-          if (err) {
-            res.status(422).json({
-              error: 'Error saving user to DB.'
-            })
-            return next(err)
-          }
-          res.status(200).json({
-            confirmed: false,
-            amount: amount,
-            address: config.address
-          })
-        })
-      }
+      // res the amount to send stored in DB
+      res.status(200).json({
+        confirmed: false,
+        amount: foundUser.confirmAmount,
+        address: config.address
+      })
     } else {
       res.status(200).json({
         confirmed: true
@@ -194,7 +171,9 @@ const confirmAmount = function (req, res, next) {
   })
 }
 
-// New amount function that takes delegate as parameter
+// ---------------------------
+// Generate a new amount route
+// ---------------------------
 const resetPasswordAmount = function (req, res, next) {
   // Get user
   let delegate = req.query.delegate
@@ -230,73 +209,6 @@ const resetPasswordAmount = function (req, res, next) {
           amount: amount,
           address: config.address
         })
-      })
-    }
-  })
-}
-
-// --------------------
-// Confirm route
-// --------------------
-const confirm = function (req, res, next) {
-  let txId = req.body.txId
-  // Get user
-  User.findById(req.user._id, function (err, foundUser) {
-    if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
-      })
-      return next(err)
-    }
-    // If user is not confirmed
-    if (!foundUser.confirmed) {
-      // If userAmount was already generated
-      if (foundUser.confirmAmount) {
-        // Check tx in blockchain
-        blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
-          if (err) {
-            res.status(422).json({
-              error: 'An error occured trying to verify tx.'
-            })
-            return next(err)
-          } else {
-            // If tx received
-            if (confirmed) {
-              // Mark user document as confirmed
-              foundUser.confirmed = true
-              // Save the user document
-              foundUser.save(function (err, updatedUser) {
-                if (err) {
-                  res.status(422).json({
-                    error: 'Error saving user to DB.'
-                  })
-                  return next(err)
-                }
-                res.status(200).json({
-                  confirmed: true
-                })
-              })
-              // res the amount to send stored in DB
-            } else {
-              // res the amount to send stored in DB
-              res.status(200).json({
-                confirmed: false,
-                amount: foundUser.confirmAmount,
-                address: config.address
-              })
-            }
-          }
-        })
-
-        // If userAmount wasn't already generated
-      } else {
-        res.status(200).json({
-          error: 'You first need to generate amount. See the API docs for more informations.'
-        })
-      }
-    } else {
-      res.status(200).json({
-        confirmed: true
       })
     }
   })
@@ -451,7 +363,6 @@ module.exports = {
   getUser,
   confirmAmount,
   resetPasswordAmount,
-  confirm,
   getForgedLisks,
   generateToken,
   roleAuthorization
