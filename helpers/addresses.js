@@ -195,7 +195,7 @@ const confirm = function (req, res, next) {
 // Remove address route
 // --------------------
 const remove = function (req, res, next) {
-  let removed
+  let removed, forge
 
   // Get user
   user.findById(req.user._id, function (err, foundUser) {
@@ -209,8 +209,12 @@ const remove = function (req, res, next) {
     // Check if address is present in user profile
     for (let i = 0; i < foundUser.addresses.length; i++) {
       if (foundUser.addresses[i].address === req.body.address) {
-        foundUser.addresses[i].remove()
-        removed = 1
+        if (foundUser.addresses[i].category !== 'Forge') {
+          foundUser.addresses[i].remove()
+          removed = 1
+        } else {
+          forge = 1
+        }
       }
     }
 
@@ -227,6 +231,11 @@ const remove = function (req, res, next) {
           address: req.body.address,
           removed: true
         })
+      })
+    } else if (forge) {
+      return next({
+        status: 422,
+        message: 'You can\'t remove your forge address.'
       })
     } else {
       return next({
