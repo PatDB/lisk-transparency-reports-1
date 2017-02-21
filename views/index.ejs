@@ -14,17 +14,18 @@
 <body>
 	<div>
 		<header>
-				<h1>Lisk Transparency Reports</h1>
+			<h1>Lisk Transparency Reports</h1>
 		</header>
 		<div ng-controller="SidebarCtrl">
 			<button ng-click="go('/')">Home</button>
-			<button ng-click="go('/addresses')">Addresses</button>
 			<button ng-click="go('/delegates')">Delegates</button>
-			<button ng-click="go('/profile')">Profile</button>
-			<button ng-click="logout()">Logout</button>
+			<button ng-show="!connected" ng-click="go('/auth')">Login / Register</button>
+			<button ng-show="connected" ng-click="go('/profile')">Profile</button>
+			<button ng-show="connected" ng-click="go('/addresses')">Addresses</button>
+			<button ng-show="connected" ng-click="logout()">Logout</button>
 		</div>
 		<main>
-				<ng-view></ng-view>
+			<ng-view></ng-view>
 		</main>
 	</div>
 	<!-- Libraries -->
