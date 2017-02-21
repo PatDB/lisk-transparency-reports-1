@@ -65,17 +65,49 @@ app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($
 }])
 
 // -----------------------------------
-// Controller for the verification Page
+// Controller for the addresses Page
 // -----------------------------------
-app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+app.controller('AddressesCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
   $scope.details = {}
 
   AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (addresses) {
     $scope.addresses = addresses
+    $scope.allConfirmed = true
+    addresses.some(function (a) {
+      if (!a.confirmed) {
+        $scope.allConfirmed = false
+        return true
+      }
+    })
   })
 
+  $scope.saveAddress = function () {
+    if (!$scope.newAddress || !$scope.newCategory) {
+      SweetAlert.swal('Error', 'Please fill all the fields', 'error')
+      return
+    }
+    AddressFactory.Add($scope.newAddress, $scope.newCategory, function (res) {
+      if (res.status === 200 || res.status === 201) {
+        SweetAlert.swal('Done', 'Your address has been saved', 'success')
+        $scope.newAddress = ''
+        AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (addresses) {
+          $scope.addresses = addresses
+          $scope.allConfirmed = true
+          addresses.some(function (a) {
+            if (!a.confirmed) {
+              $scope.allConfirmed = false
+              return true
+            }
+          })
+        })
+      } else {
+        SweetAlert.swal('Error', res.data.error, 'error')
+      }
+    })
+  }
+
   AddressFactory.getToSendAddress(function (res) {
-    $scope.details.address = res
+    $scope.toSendAddress = res
   })
 
   $scope.verify = function () {
@@ -96,11 +128,6 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFact
         }
       }
     })
-  }
-
-  $scope.updateDetails = function () {
-    console.log($scope.address)
-    $scope.details.amount = $scope.address.confirmAmount
   }
 }])
 
@@ -132,24 +159,6 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
       $scope.totalForgedLisksForUser = res
     })
   })
-
-  $scope.saveAddress = function () {
-    if (!$scope.newAddress || !$scope.newCategory) {
-      SweetAlert.swal('Error', 'Please fill all the fields', 'error')
-      return
-    }
-    AddressFactory.Add($scope.newAddress, $scope.newCategory, function (res) {
-      if (res.status === 200 || res.status === 201) {
-        SweetAlert.swal('Done', 'Your address has been saved', 'success')
-        $scope.newAddress = ''
-        AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (res) {
-          $scope.addresses = res
-        })
-      } else {
-        SweetAlert.swal('Error', res.data.error, 'error')
-      }
-    })
-  }
 }])
 
 // -----------------------------

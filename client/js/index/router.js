@@ -8,9 +8,9 @@ app.config(['$routeProvider', function ($routeProvider) {
     templateUrl: 'templates/auth.html',
     controller: 'AuthCtrl'
   })
-  .when('/verify', {
-    templateUrl: 'templates/verify.html',
-    controller: 'VerifyCtrl'
+  .when('/addresses', {
+    templateUrl: 'templates/addresses.html',
+    controller: 'AddressesCtrl'
   })
   .when('/delegates', {
     templateUrl: 'templates/delegates.html',
