@@ -20,7 +20,12 @@ app.controller('AuthCtrl', ['$scope', '$window', '$location', '$sessionStorage',
     }
     AuthFactory.Register($scope.register.delegate, $scope.register.password, function (res) {
       if (res === 201) {
-        $window.location.reload()
+        SweetAlert.swal('Account created', 'Please login', 'success')
+        $scope.login.delegate = $scope.register.delegate
+        $scope.login.password = $scope.register.password
+        $scope.register.delegate = ''
+        $scope.register.password = ''
+        $scope.register.rpassword = ''
       } else {
         SweetAlert.swal('Error', res.data.error, 'error')
       }
@@ -34,9 +39,8 @@ app.controller('AuthCtrl', ['$scope', '$window', '$location', '$sessionStorage',
     }
     AuthFactory.Login($scope.login.delegate, $scope.login.password, function (res) {
       if (res.status === 200) {
-        $window.location.reload()
+        $location.path('/profile')
       } else {
-        console.log(res)
         SweetAlert.swal('Error', res.data.error, 'error')
       }
     })
@@ -46,18 +50,20 @@ app.controller('AuthCtrl', ['$scope', '$window', '$location', '$sessionStorage',
 // ------------------------
 // Top Menu Controller
 // ------------------------
-app.controller('SidebarCtrl', ['$scope', '$sessionStorage', '$window', '$location', 'AuthFactory', function ($scope, $sessionStorage, $window, $location, AuthFactory) {
-  $scope.connected = ($sessionStorage.currentUser !== undefined && $sessionStorage.currentUser.token !== undefined)
-
+app.controller('SidebarCtrl', ['$rootScope', '$scope', '$sessionStorage', '$window', '$location', 'AuthFactory', function ($rootScope, $scope, $sessionStorage, $window, $location, AuthFactory) {
   $scope.logout = function () {
     AuthFactory.Logout()
-    $scope.connected = false
+    $rootScope.connected = false
     $location.path('/auth')
   }
 
   $scope.go = function (path) {
     $location.path(path)
   }
+
+  $rootScope.$watch('connected', function (newValue, oldValue) {
+    $rootScope.connected = ($sessionStorage.currentUser !== undefined && $sessionStorage.currentUser.token !== undefined)
+  })
 }])
 
 // -----------------------------------
