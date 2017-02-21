@@ -24,21 +24,21 @@ const get = function (req, res, next) {
       })
     }
     if (req.query.address) {
-      delegate.profile.addresses.forEach(function (address) {
+      delegate.addresses.forEach(function (address) {
         if (address.address === req.query.address) {
           toReturnAddr.push(address)
         }
       }, this)
     }
     if (req.query.category) {
-      delegate.profile.addresses.forEach(function (address) {
+      delegate.addresses.forEach(function (address) {
         if (address.category === req.query.category) {
           toReturnAddr.push(address)
         }
       }, this)
     }
     if (!req.query.address && !req.query.category) {
-      toReturnAddr = delegate.profile.addresses
+      toReturnAddr = delegate.addresses
     }
     res.status(200).json(
       toReturnAddr
@@ -67,7 +67,7 @@ const add = function (req, res, next) {
         message: 'Can\'t find this delegate'
       })
     } else {
-      foundUser.profile.addresses.push({
+      foundUser.addresses.push({
         address: address,
         category: category,
         confirmAmount: amount
@@ -98,6 +98,7 @@ const add = function (req, res, next) {
 // Confirm address route
 // ---------------------
 const confirm = function (req, res, next) {
+  console.log(req)
   let address, pos
   let txId = req.body.txId
   let addressFound = false
@@ -110,7 +111,7 @@ const confirm = function (req, res, next) {
         message: err
       })
     }
-    if (foundUser) {
+    if (!foundUser) {
       return next({
         status: 422,
         message: 'Can\'t find this delegate'
@@ -118,9 +119,9 @@ const confirm = function (req, res, next) {
     }
 
     // Check if address is present in user profile
-    for (let i = 0; i < foundUser.profile.addresses.length; i++) {
-      if (foundUser.profile.addresses[i].address === req.body.address) {
-        address = foundUser.profile.addresses[i]
+    for (let i = 0; i < foundUser.addresses.length; i++) {
+      if (foundUser.addresses[i].address === req.body.address) {
+        address = foundUser.addresses[i]
         pos = i
         addressFound = true
       }
@@ -135,14 +136,17 @@ const confirm = function (req, res, next) {
           blockchain.checkConfirmation(address.address, config.address, txId, address.confirmAmount, function (err, confirmed) {
             if (err) {
               return next({
-                status: 500,
+                status: 422,
                 message: err
               })
             } else {
               // If tx received
               if (confirmed) {
                 // Mark user document as confirmed
-                foundUser.profile.addresses[pos].confirmed = true
+                foundUser.addresses[pos].confirmed = true
+                if (foundUser.addresses[pos].category === 'Forge') {
+                  foundUser.confirmed = true
+                }
                 // Save the user document
                 foundUser.save(function (err, updateduser) {
                   if (err) {
@@ -203,9 +207,9 @@ const remove = function (req, res, next) {
     }
 
     // Check if address is present in user profile
-    for (let i = 0; i < foundUser.profile.addresses.length; i++) {
-      if (foundUser.profile.addresses[i].address === req.body.address) {
-        foundUser.profile.addresses[i].remove()
+    for (let i = 0; i < foundUser.addresses.length; i++) {
+      if (foundUser.addresses[i].address === req.body.address) {
+        foundUser.addresses[i].remove()
         removed = 1
       }
     }
@@ -233,9 +237,19 @@ const remove = function (req, res, next) {
   })
 }
 
+// -------------------------
+// Get address to send route
+// -------------------------
+const getToSendAddress = function (req, res, next) {
+  res.status(200).json(
+      config.address
+    )
+}
+
 module.exports = {
+  get,
   add,
   confirm,
   remove,
-  get
+  getToSendAddress
 }

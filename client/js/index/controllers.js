@@ -67,18 +67,25 @@ app.controller('SidebarCtrl', ['$scope', '$location', 'AuthFactory', function ($
 // -----------------------------------
 // Controller for the verification Page
 // -----------------------------------
-app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
-  AuthFactory.Amount(function (res) {
-    $scope.test = res
+app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+  $scope.details = {}
+
+  AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (addresses) {
+    $scope.addresses = addresses
   })
+
+  AddressFactory.getToSendAddress(function (res) {
+    $scope.details.address = res
+  })
+
   $scope.verify = function () {
-    AuthFactory.Confirm($scope.txId, function (err, data) {
+    AddressFactory.Confirm($scope.address.address, $scope.txId, function (err, data) {
       if (err) {
-        SweetAlert.swal('Error', 'Transaction not found.', 'error')
+        SweetAlert.swal('Error', 'Transaction not found. Please retry in 10s.', 'error')
       } else {
         if (data.confirmed) {
           SweetAlert.swal({
-            title: 'Account confirmed !',
+            title: 'Address verified !',
             type: 'success'
           }, function () {
             $location.path('/')
@@ -89,6 +96,11 @@ app.controller('VerifyCtrl', ['$scope', '$location', 'AuthFactory', '$sessionSto
         }
       }
     })
+  }
+
+  $scope.updateDetails = function () {
+    console.log($scope.address)
+    $scope.details.amount = $scope.address.confirmAmount
   }
 }])
 
@@ -112,6 +124,10 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
     $scope.delegate = res
     userPublickey = res.publicKey
 
+    AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (res) {
+      $scope.addresses = res
+    })
+
     AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
       $scope.totalForgedLisksForUser = res
       $scope.totalForgedLisksForUser.fees = res.fees / 10000000
@@ -129,7 +145,7 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
       if (res.status === 200 || res.status === 201) {
         SweetAlert.swal('Done', 'Your address has been saved', 'success')
         $scope.newAddress = ''
-        AddressFactory.getAddresses($sessionStorage.currentUser.delegate, function (res) {
+        AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (res) {
           $scope.addresses = res
         })
       } else {
@@ -137,10 +153,6 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
       }
     })
   }
-
-  AddressFactory.getAddresses($sessionStorage.currentUser.delegate, function (res) {
-    $scope.addresses = res
-  })
 }])
 
 // -----------------------------
@@ -161,7 +173,7 @@ app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactor
       $scope.totalForgedLisksForUser.rewards = res.rewards / 10000000
       $scope.totalForgedLisksForUser.forged = res.forged / 10000000
     })
-    AddressFactory.getAddresses(userToDisplayReport, function (res) {
+    AddressFactory.getAddress(userToDisplayReport, null, function (res) {
       $scope.addresses = res
     })
   })
@@ -239,4 +251,3 @@ app.run(function ($rootScope, $location, $http, $sessionStorage) {
     }
   })
 })
-

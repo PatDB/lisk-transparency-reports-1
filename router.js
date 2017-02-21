@@ -33,9 +33,6 @@ module.exports = function (app) {
   // Return amount to send
   authRoutes.get('/resetPasswordAmount', AuthHelper.resetPasswordAmount)
 
-  // Verify transaction route
-  authRoutes.post('/confirm', requireAuth, AuthHelper.confirm)
-
   // Get all active delegates from the DB
   authRoutes.get('/getDelegates', AuthHelper.getAllUsers)
 
@@ -67,6 +64,9 @@ module.exports = function (app) {
 
   // Get addresses of a user
   addrRoutes.get('/', AddrHelper.get)
+
+  // Get address to send tx
+  addrRoutes.get('/getToSendAddress', AddrHelper.getToSendAddress)
 
   // ==========================
   // Report Routes
