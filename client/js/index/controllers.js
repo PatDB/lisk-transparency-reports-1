@@ -64,6 +64,10 @@ app.controller('SidebarCtrl', ['$rootScope', '$scope', '$sessionStorage', '$wind
   $rootScope.$watch('connected', function (newValue, oldValue) {
     $rootScope.connected = ($sessionStorage.currentUser !== undefined && $sessionStorage.currentUser.token !== undefined)
   })
+
+  $rootScope.$watch('connected', function (newValue, oldValue) {
+    $rootScope.confirmed = ($sessionStorage.currentUser !== undefined && $sessionStorage.currentUser.confirmed)
+  })
 }])
 
 // -----------------------------------
