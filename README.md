@@ -14,6 +14,35 @@ This automated tool allow Lisk delegates to manage (very) easily their transpare
 - [Lisk Forum Post](https://forum.lisk.io/viewtopic.php?f=25&t=1347)
 
 
+## Planned features for futures releases
+
+#### v0.3.0:
+- Multiples addresses management
+- Profile page (containing only blockchain delegate informations and confirmed addresses atm)
+- Report page (containing only blockchain delegate informations and confirmed addresses atm)
+- Reset password by transaction functionnality
+- _RESTFUL API endpoints_
+- _JSDoc (usejsdoc.org)_
+
+#### v0.4.0:
+- _Test routines_
+
+#### v0.5.0:
+- First reports process
+- Email support (only for notifications, no security stuff with the email, too weak)
+- *PUBLIC RELEASE*
+
+#### v0.6.0:
+- Enhanced reports process
+- Reports charts
+- _Interface Design_
+
+#### v0.7.0:
+- _Admin dashboard_
+- _Account deletion (by admin only, and only in case of squatting)_
+- _Operations logging, logging dashboard with analysis_
+
+
 ## Installation
 
 ```bash
