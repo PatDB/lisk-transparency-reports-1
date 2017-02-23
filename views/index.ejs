@@ -20,7 +20,7 @@
 			<button ng-click="go('/')">Home</button>
 			<button ng-click="go('/delegates')">Delegates</button>
 			<button ng-show="!connected" ng-click="go('/auth')">Login / Register</button>
-			<button ng-show="connected" ng-click="go('/profile')">Profile</button>
+			<button ng-show="connected && confirmed" ng-click="go('/profile')">Profile</button>
 			<button ng-show="connected" ng-click="go('/addresses')">Addresses</button>
 			<button ng-show="connected" ng-click="logout()">Logout</button>
 		</div>
