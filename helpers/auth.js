@@ -109,7 +109,7 @@ const login = function (req, res, next) {
 // --------------------
 
 const getAllUsers = function (req, res, next) {
-  User.find(function (err, users) {
+  User.find({ confirmed: true }, function (err, users) {
     if (err) {
       res.status(500).json({
         error: 'Bonjour France.'
