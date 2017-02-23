@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const user = require('../models/User')
 const blockchain = require('./blockchain')
 const config = require('../config/main')
@@ -7,9 +8,10 @@ const config = require('../config/main')
 // --------------------
 const get = function (req, res, next) {
   let toReturnAddr = []
+  let delegate = req.query.delegate
 
   user.findOne({
-    delegate: req.query.delegate
+    delegate: delegate
   }, function (err, delegate) {
     if (err) {
       return next({
@@ -40,9 +42,51 @@ const get = function (req, res, next) {
     if (!req.query.address && !req.query.category) {
       toReturnAddr = delegate.addresses
     }
-    res.status(200).json(
-      toReturnAddr
-    )
+
+    if (req.headers.authorization) {
+      let encoded = req.headers.authorization.substr(4)
+      jwt.verify(encoded, config.secret, function (err, decoded) {
+        if (err) {
+          return next({
+            status: 500,
+            message: err
+          })
+        }
+        user.findById(decoded._id, function (err, asker) {
+          if (err) {
+            return next({
+              status: 500,
+              message: err
+            })
+          }
+          if (asker.delegate === delegate.delegate) {
+            res.status(200).json(
+              toReturnAddr
+            )
+          } else {
+            let finalAddr = []
+            toReturnAddr.forEach(function (address) {
+              if (address.confirmed) {
+                finalAddr.push(address)
+              }
+            }, this)
+            res.status(200).json(
+              finalAddr
+            )
+          }
+        })
+      })
+    } else {
+      let finalAddr = []
+      toReturnAddr.forEach(function (address) {
+        if (address.confirmed) {
+          finalAddr.push(address)
+        }
+      }, this)
+      res.status(200).json(
+        finalAddr
+      )
+    }
   })
 }
 
@@ -256,8 +300,8 @@ const remove = function (req, res, next) {
 // -------------------------
 const getToSendAddress = function (req, res, next) {
   res.status(200).json(
-      config.address
-    )
+    config.address
+  )
 }
 
 module.exports = {
