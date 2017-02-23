@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken')
 const blockchain = require('../helpers/blockchain')
-var request = require('request')
-var api = require('../config/main').api
 const User = require('../models/User')
 const config = require('../config/main')
 
