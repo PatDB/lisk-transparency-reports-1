@@ -39,19 +39,24 @@
     <br>
     <hr>
     <h2>Add Address</h2>
-    <label for="newCategory">Category</label>
-    <select id="newCategory" ng-model="newCategory">
-      <option value='Donations'>Donations</option>
-      <option value='Servers'>Server Maintenance</option>
-      <option value='Personal'>Personal funds</option>
-      <option value='Holding'>Holding</option>
-      <option value='Marketing'>Marketing</option>
-      <option value='Unknown'>Other</option>
-    </select>
-    <br>
-    <label for="newAddr">Address</label>
-    <input type="text" id="newAddr" ng-model="newAddress" />
-    <button ng-click="saveAddress()">Save</button>
+    <div ng-show="confirmedDelegate">
+      <label for="newCategory">Category</label>
+      <select id="newCategory" ng-model="newCategory">
+        <option value='Donations'>Donations</option>
+        <option value='Servers'>Server Maintenance</option>
+        <option value='Personal'>Personal funds</option>
+        <option value='Holding'>Holding</option>
+        <option value='Marketing'>Marketing</option>
+        <option value='Unknown'>Other</option>
+      </select>
+      <br>
+      <label for="newAddr">Address</label>
+      <input type="text" id="newAddr" ng-model="newAddress" />
+      <button ng-click="saveAddress()">Save</button>
+    </div>
+    <div ng-show="!confirmedDelegate">
+      <p style="color: red">You need to verify your forge address to add more addresses</p>
+    </div>
   </div>
   <br><br>
 </div>

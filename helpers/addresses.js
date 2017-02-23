@@ -66,31 +66,36 @@ const add = function (req, res, next) {
         status: 422,
         message: 'Can\'t find this delegate'
       })
-    } else {
-      foundUser.addresses.push({
-        address: address,
-        category: category,
-        confirmAmount: amount
-      })
-
-      foundUser.save(function (err, updatedUser) {
-        if (err) {
-          return next({
-            status: 500,
-            message: err
-          })
-        }
-        if (!updatedUser) {
-          return next({
-            status: 422,
-            message: 'Error saving user to DB.'
-          })
-        }
-        res.status(201).json({
-          success: true
-        })
+    }
+    if (!foundUser.confirmed) {
+      return next({
+        status: 422,
+        message: 'You first need to verify your forge address'
       })
     }
+    foundUser.addresses.push({
+      address: address,
+      category: category,
+      confirmAmount: amount
+    })
+
+    foundUser.save(function (err, updatedUser) {
+      if (err) {
+        return next({
+          status: 500,
+          message: err
+        })
+      }
+      if (!updatedUser) {
+        return next({
+          status: 422,
+          message: 'Error saving user to DB.'
+        })
+      }
+      res.status(201).json({
+        success: true
+      })
+    })
   })
 }
 

@@ -71,6 +71,7 @@ app.controller('SidebarCtrl', ['$rootScope', '$scope', '$sessionStorage', '$wind
 // -----------------------------------
 app.controller('AddressesCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
   $scope.details = {}
+  $scope.confirmedDelegate = $sessionStorage.currentUser.confirmed
 
   AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (addresses) {
     $scope.addresses = addresses
