@@ -1,6 +1,6 @@
 {
   "name": "lisk-transparency-reports",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -20,13 +20,13 @@
     "install": "^0.8.4",
     "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.7.6",
-    "morgan": "~1.7.0",
+    "morgan": "~1.8.1",
     "ngstorage": "^0.3.11",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1",
     "passport-local": "^1.0.0",
     "request": "^2.79.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.4.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -34,7 +34,7 @@
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-cssmin": "^2.0.0",
     "grunt-ng-annotate": "^3.0.0"
   }
 }
