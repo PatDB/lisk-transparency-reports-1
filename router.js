@@ -27,9 +27,6 @@ module.exports = function (app) {
   // Login route
   authRoutes.post('/login', requireLogin, AuthHelper.login)
 
-  // Generate / return aleatory amount to send route
-  authRoutes.get('/amount', requireAuth, AuthHelper.confirmAmount)
-
   // Return amount to send
   authRoutes.get('/resetPasswordAmount', AuthHelper.resetPasswordAmount)
 

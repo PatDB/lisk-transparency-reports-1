@@ -140,35 +140,6 @@ const getUser = function (req, res, next) {
   })
 }
 
-// --------------------
-// Amount route
-// --------------------
-const confirmAmount = function (req, res, next) {
-  // Get user
-  User.findById(req.user._id, function (err, foundUser) {
-    if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
-      })
-      return next(err)
-    }
-    // If user isn't confirmed
-    if (!foundUser.confirmed) {
-      // If userAmount was already generated
-      // res the amount to send stored in DB
-      res.status(200).json({
-        confirmed: false,
-        amount: foundUser.confirmAmount,
-        address: config.address
-      })
-    } else {
-      res.status(200).json({
-        confirmed: true
-      })
-    }
-  })
-}
-
 // ---------------------------
 // Generate a new amount route
 // ---------------------------
@@ -227,9 +198,7 @@ const initResetPassword = function (req, res, next) {
         error: 'User not found'
       })
     }
-    /* NOW HAVE TO UPDATE THE AMOUNT THAT HAS TO BE VERIFIED */
-    // save the bear
-    foundUser.confirmAmount = amount
+    foundUser.resetPasswordAmount = amount
     foundUser.save(function (err, newUser) {
       if (err) {
         return next(err)
@@ -238,8 +207,6 @@ const initResetPassword = function (req, res, next) {
         success: true
       })
     })
-
-    /* THEN REDIRECT TO THE RESETPASSWORD PAGE */
   })
 }
 
@@ -265,7 +232,7 @@ const resetPassword = function (req, res, next) {
     // If userAmount was already generated
     if (foundUser.resetPasswordAmount) {
       // Check tx in blockchain
-      blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
+      blockchain.checkConfirmation(foundUser.addresses[0].address, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
         if (err) {
           res.status(500).json({
             error: 'An error occured trying to verify tx.'
@@ -275,6 +242,7 @@ const resetPassword = function (req, res, next) {
           // If tx received
           if (confirmed) {
             foundUser.password = password
+            foundUser.resetPasswordAmount = undefined
             foundUser.save(function (err, newUser) {
               if (err) {
                 return next(err)
@@ -359,7 +327,6 @@ module.exports = {
   resetPassword,
   getAllUsers,
   getUser,
-  confirmAmount,
   resetPasswordAmount,
   getForgedLisks,
   generateToken,
