@@ -73,60 +73,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage, $rootScope) {
       })
   }
 
-  /* Function to get all delegates names from DB */
-  function displayAll (callback) {
-    $http.get('/api/auth/getDelegates')
-      .then(function (res) {
-        if (res.status === 200) {
-          callback(res.data.allUsers)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
-  /* Function that'll extract all informations of a delegate from
-  the Lisk API */
-  function getUserh (username, callback) {
-    $http({
-      url: '/api/auth/getDelegate',
-      method: 'GET',
-      params: {
-        username: username
-      }
-    })
-      .then(function (res) {
-        if (res.status === 200) {
-          callback(res.data)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
-  function getTotalLisksForgedForUser (publicKey, callback) {
-    $http({
-      url: '/api/auth/getForgedLisks',
-      method: 'GET',
-      params: {
-        publicKey: publicKey
-      }
-    })
-      .then(function (res) {
-        if (res.status === 200) {
-          callback(res.data)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
   function resetPasswordAmount (delegate, callback) {
     $http({
       url: '/api/auth/resetPasswordAmount',
@@ -163,12 +109,70 @@ app.factory('AuthFactory', function ($http, $sessionStorage, $rootScope) {
     Login,
     initResetPassword,
     resetPassword,
-    displayAll,
-    getUserh,
-    getTotalLisksForgedForUser,
     resetPasswordAmount,
     Logout,
     Token
+  }
+})
+
+app.factory('DelegateFactory', function ($http, $sessionStorage, $rootScope) {
+  // Function to get all delegates names from DB
+  function getDelegates (callback) {
+    $http.get('/api/delegates/getDelegates')
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data.allUsers)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  // Function that'll extract all informations of a delegate from the Lisk API
+  function getDelegate (username, callback) {
+    $http({
+      url: '/api/delegates/getDelegate',
+      method: 'GET',
+      params: {
+        username: username
+      }
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function getForged (publicKey, callback) {
+    $http({
+      url: '/api/delegates/getForged',
+      method: 'GET',
+      params: {
+        publicKey: publicKey
+      }
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  return {
+    getDelegates,
+    getDelegate,
+    getForged
   }
 })
 

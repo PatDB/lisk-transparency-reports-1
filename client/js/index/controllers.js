@@ -141,8 +141,8 @@ app.controller('AddressesCtrl', ['$scope', '$location', 'AuthFactory', 'AddressF
 // ----------------------------------------
 // Controller for the Delegates Display Page
 // ----------------------------------------
-app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, $sessionStorage, SweetAlert) {
-  AuthFactory.displayAll(function (res) {
+app.controller('DelegatesCtrl', ['$scope', '$location', 'DelegateFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, DelegateFactory, $sessionStorage, SweetAlert) {
+  DelegateFactory.getDelegates(function (res) {
     $scope.delegates = res
   })
 }])
@@ -150,19 +150,21 @@ app.controller('DelegatesCtrl', ['$scope', '$location', 'AuthFactory', '$session
 // ----------------------------------------
 // Controller for the profile Page
 // ----------------------------------------
-app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, AuthFactory, AddressFactory, $sessionStorage, SweetAlert) {
+app.controller('ProfileCtrl', ['$scope', '$location', 'DelegateFactory', 'AddressFactory', '$sessionStorage', 'SweetAlert', function ($scope, $location, DelegateFactory, AddressFactory, $sessionStorage, SweetAlert) {
   // Got it in param from the url
-  let userToDisplayReport = $sessionStorage.currentUser.delegate
-  let userPublickey
-  AuthFactory.getUserh(userToDisplayReport, function (res) {
-    $scope.delegate = res
-    userPublickey = res.publicKey
+  let delegate = {}
+  delegate.delegate = $sessionStorage.currentUser.delegate
 
-    AddressFactory.getAddress($sessionStorage.currentUser.delegate, null, function (res) {
+
+  DelegateFactory.getDelegate(delegate.delegate, function (res) {
+    $scope.delegate = res
+    delegate.publicKey = res.publicKey
+
+    AddressFactory.getAddress(delegate.delegate, null, function (res) {
       $scope.addresses = res
     })
 
-    AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
+    DelegateFactory.getForged(delegate.publicKey, function (res) {
       $scope.totalForgedLisksForUser = res
     })
   })
@@ -171,19 +173,19 @@ app.controller('ProfileCtrl', ['$scope', '$location', 'AuthFactory', 'AddressFac
 // -----------------------------
 // Controller for the report Page
 // -----------------------------
-app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'AuthFactory', 'AddressFactory', '$sessionStorage', function ($scope, $location, $routeParams, AuthFactory, AddressFactory, $sessionStorage) {
+app.controller('ReportCtrl', ['$scope', '$location', '$routeParams', 'DelegateFactory', 'AddressFactory', '$sessionStorage', function ($scope, $location, $routeParams, DelegateFactory, AddressFactory, $sessionStorage) {
   // Got it in param from the url
-  let userToDisplayReport = $routeParams.param1
-  let userPublickey
+  let delegate = {}
+  delegate.delegate = $routeParams.param1
 
-  AuthFactory.getUserh(userToDisplayReport, function (res) {
+  DelegateFactory.getDelegate(delegate.delegate, function (res) {
     $scope.delegate = res
-    userPublickey = res.publicKey
+    delegate.publicKey = res.publicKey
 
-    AuthFactory.getTotalLisksForgedForUser(userPublickey, function (res) {
+    DelegateFactory.getForged(delegate.publicKey, function (res) {
       $scope.totalForgedLisksForUser = res
     })
-    AddressFactory.getAddress(userToDisplayReport, null, function (res) {
+    AddressFactory.getAddress(delegate.delegate, null, function (res) {
       $scope.addresses = res
     })
   })

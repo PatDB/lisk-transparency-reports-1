@@ -222,7 +222,7 @@ var getBalance = function (address, callback) {
  * Return total lisk forged for a given public key
  *
  */
-var getForgedLisksUser = function (generatorPublicKey, callback) {
+var getForged = function (generatorPublicKey, callback) {
   var data = {
     generatorPublicKey: generatorPublicKey
   }
@@ -250,5 +250,5 @@ module.exports = {
   getBalance,
   getDelegate,
   checkConfirmation,
-  getForgedLisksUser
+  getForged
 }
