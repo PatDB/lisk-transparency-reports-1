@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const blockchain = require('../helpers/blockchain')
-
 const User = require('../models/User')
 const config = require('../config/main')
 
@@ -49,13 +48,14 @@ const register = function (req, res, next) {
         })
       }
 
-      // If email is unique and password was provided, create account
       let user = new User({
         delegate: username,
         password: password,
-        profile: {
-          forge: delegate.address
-        }
+        addresses: [{
+          address: delegate.address,
+          category: 'Forge',
+          confirmAmount: (Math.random().toFixed(4) * 100000000).toFixed(0)
+        }]
       })
 
       user.save(function (err, newUser) {
@@ -104,122 +104,128 @@ const login = function (req, res, next) {
   })
 }
 
-// --------------------
-// Amount route
-// --------------------
-const amount = function (req, res, next) {
+// ---------------------------
+// Generate a new amount route
+// ---------------------------
+const resetPasswordAmount = function (req, res, next) {
   // Get user
-  User.findById(req.user._id, function (err, foundUser) {
+  let delegate = req.query.delegate
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
     if (err) {
       res.status(422).json({
         error: 'No user was found.'
       })
       return next(err)
     }
-    // If user isn't confirmed
-    if (!foundUser.confirmed) {
-      // If userAmount was already generated
-      if (foundUser.confirmAmount) {
-        // res the amount to send stored in DB
+    if (foundUser.resetPasswordAmount) {
+      res.status(200).json({
+        amount: foundUser.resetPasswordAmount,
+        address: config.address
+      })
+    } else {
+      // Generate new amount
+      let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+      // Store it in user document
+      foundUser.resetPasswordAmount = amount
+
+      // Save the user document
+      foundUser.save(function (err, updatedUser) {
+        if (err) {
+          res.status(422).json({
+            error: 'Error saving user to DB.'
+          })
+          return next(err)
+        }
         res.status(200).json({
-          confirmed: false,
-          amount: foundUser.confirmAmount,
+          amount: amount,
           address: config.address
         })
-
-        // If userAmount wasn't already generated
-      } else {
-        // Generate new amount
-        let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
-        console.log(amount)
-        // Store it in user document
-        foundUser.confirmAmount = amount
-
-        // Save the user document
-        foundUser.save(function (err, updatedUser) {
-          if (err) {
-            res.status(422).json({
-              error: 'Error saving user to DB.'
-            })
-            return next(err)
-          }
-          res.status(200).json({
-            confirmed: false,
-            amount: amount,
-            address: config.address
-          })
-        })
-      }
-    } else {
-      res.status(200).json({
-        confirmed: true
       })
     }
   })
 }
 
+// ----------------------
+// Init reset password
+// ----------------------
+const initResetPassword = function (req, res, next) {
+  let delegate = req.body.delegate
+  let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
+  console.log(delegate)
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
+    if (err) {
+      res.status(422).json({
+        error: 'User not found'
+      })
+    }
+    foundUser.resetPasswordAmount = amount
+    foundUser.save(function (err, newUser) {
+      if (err) {
+        return next(err)
+      }
+      res.status(201).json({
+        success: true
+      })
+    })
+  })
+}
+
 // --------------------
-// Confirm route
+// Reset password route
 // --------------------
-const confirm = function (req, res, next) {
+const resetPassword = function (req, res, next) {
   let txId = req.body.txId
-  // Get user
-  User.findById(req.user._id, function (err, foundUser) {
+  let delegate = req.body.delegate
+  let password = req.body.password
+
+  // Get delegate
+  User.findOne({
+    delegate: delegate
+  }, function (err, foundUser) {
     if (err) {
       res.status(422).json({
         error: 'No user was found.'
       })
       return next(err)
     }
-    // If user is not confirmed
-    if (!foundUser.confirmed) {
-      // If userAmount was already generated
-      if (foundUser.confirmAmount) {
-        // Check tx in blockchain
-        blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.confirmAmount, function (err, confirmed) {
-          if (err) {
-            res.status(422).json({
-              error: 'An error occured trying to verify tx.'
-            })
-            return next(err)
-          } else {
-            // If tx received
-            if (confirmed) {
-              // Mark user document as confirmed
-              foundUser.confirmed = true
-              // Save the user document
-              foundUser.save(function (err, updatedUser) {
-                if (err) {
-                  res.status(422).json({
-                    error: 'Error saving user to DB.'
-                  })
-                  return next(err)
-                }
-                res.status(200).json({
-                  confirmed: true
-                })
-              })
-              // res the amount to send stored in DB
-            } else {
-              // res the amount to send stored in DB
-              res.status(200).json({
-                confirmed: false,
-                amount: foundUser.confirmAmount,
-                address: config.address
-              })
-            }
-          }
-        })
 
-        // If userAmount wasn't already generated
-      } else {
-        res.status(200).json({
-          error: 'You first need to generate amount: GET /api/auth/amount'
-        })
-      }
+    // If userAmount was already generated
+    if (foundUser.resetPasswordAmount) {
+      // Check tx in blockchain
+      blockchain.checkConfirmation(foundUser.addresses[0].address, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
+        if (err) {
+          res.status(500).json({
+            error: 'An error occured trying to verify tx.'
+          })
+          return next(err)
+        } else {
+          // If tx received
+          if (confirmed) {
+            foundUser.password = password
+            foundUser.resetPasswordAmount = undefined
+            foundUser.save(function (err, newUser) {
+              if (err) {
+                return next(err)
+              }
+              return res.status(200).send()
+            })
+          } else {
+            // res the amount to send stored in DB
+            res.status(422).json({
+              success: false
+            })
+          }
+        }
+      })
+
+      // If userAmount wasn't already generated
     } else {
       res.status(200).json({
-        confirmed: true
+        error: 'You first need to generate amount. See the API docs for more informations.'
       })
     }
   })
@@ -263,8 +269,9 @@ const roleAuthorization = function (role) {
 module.exports = {
   register,
   login,
-  amount,
-  confirm,
+  initResetPassword,
+  resetPassword,
+  resetPasswordAmount,
   generateToken,
   roleAuthorization
 }

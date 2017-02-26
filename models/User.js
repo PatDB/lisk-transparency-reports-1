@@ -10,7 +10,14 @@ const AddressSchema = new Schema({
   category: {
     type: String,
     required: true,
-    enum: ['Holding', 'Donations', 'Personal', 'Servers', 'Unknown']
+    enum: ['Forge', 'Holding', 'Donations', 'Personal', 'Servers', 'Unknown', 'Marketing']
+  },
+  confirmed: {
+    type: Boolean,
+    default: false
+  },
+  confirmAmount: {
+    type: Number
   }
 })
 
@@ -26,12 +33,7 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  profile: {
-    forge: {
-      type: String
-    },
-    addresses: [AddressSchema]
-  },
+  addresses: [AddressSchema],
   role: {
     type: String,
     enum: ['Delegate', 'Admin'],
@@ -41,7 +43,11 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
-  confirmAmount: {
+  activated: {
+    type: Boolean,
+    default: true
+  },
+  resetPasswordAmount: {
     type: Number
   }
 }, {

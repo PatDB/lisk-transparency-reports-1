@@ -1,4 +1,4 @@
-app.factory('AuthFactory', function ($http, $sessionStorage) {
+app.factory('AuthFactory', function ($http, $sessionStorage, $rootScope) {
   function Login (delegate, password, callback) {
     $http.post('/api/auth/login', {
       delegate: delegate.toLowerCase(),
@@ -13,10 +13,13 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
           // store username and token in local storage to keep user logged in between page refreshes
           $sessionStorage.currentUser = {
             delegate: delegate,
+            confirmed: res.data.confirmed,
             token: res.data.token
           }
 
           $http.defaults.headers.common.Authorization = res.data.token
+
+          $rootScope.connected = true
         } else {
           // execute callback to indicate failed login
           callback(res)
@@ -32,46 +35,56 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       password: password
     })
       .then(function (res) {
-        // register successful
-        if (res.status === 200) {
-          callback(res.status)
-
-          $sessionStorage.currentUser = {
-            delegate: delegate,
-            token: res.data.token
-          }
-
-          $http.defaults.headers.common.Authorization = res.data.token
-        } else {
-          callback(res)
-        }
+        callback(res.status)
       }).catch(function (e) {
         callback(e)
       })
   }
 
-  function Amount (callback) {
-    $http.get('/api/auth/amount')
+  function initResetPassword (delegate, callback) {
+    $http.post('/api/auth/initResetPassword', {
+      delegate: delegate.toLowerCase()
+    })
       .then(function (res) {
-        // register successful
-        if (res.status === 200) {
-          callback(res.data)
+        if (res.status === 201 && res.data.success === true) {
+          callback(true)
         } else {
-          callback(res.status)
+          callback(false)
         }
       }).catch(function (e) {
         callback(e)
       })
   }
 
-  function Confirm (txId, callback) {
-    $http.post('/api/auth/confirm', {
-      txId: txId
+  function resetPassword (delegate, txId, password, callback) {
+    $http.post('/api/auth/resetPassword', {
+      delegate: delegate.toLowerCase(),
+      txId: txId,
+      password: password
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      }).catch(function (err) {
+        callback(err)
+      })
+  }
+
+  function resetPasswordAmount (delegate, callback) {
+    $http({
+      url: '/api/auth/resetPasswordAmount',
+      method: 'GET',
+      params: {
+        delegate: delegate
+      }
     })
       .then(function (res) {
         // register successful
         if (res.status === 200) {
-          callback(null, res.data)
+          callback(res.data)
         } else {
           callback(res.status)
         }
@@ -94,9 +107,168 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
   return {
     Register,
     Login,
-    Amount,
-    Confirm,
+    initResetPassword,
+    resetPassword,
+    resetPasswordAmount,
     Logout,
     Token
+  }
+})
+
+app.factory('DelegateFactory', function ($http, $sessionStorage, $rootScope) {
+  // Function to get all delegates names from DB
+  function getDelegates (callback) {
+    $http.get('/api/delegates/getDelegates')
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data.allUsers)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  // Function that'll extract all informations of a delegate from the Lisk API
+  function getDelegate (username, callback) {
+    $http({
+      url: '/api/delegates/getDelegate',
+      method: 'GET',
+      params: {
+        username: username
+      }
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function getForged (publicKey, callback) {
+    $http({
+      url: '/api/delegates/getForged',
+      method: 'GET',
+      params: {
+        publicKey: publicKey
+      }
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  return {
+    getDelegates,
+    getDelegate,
+    getForged
+  }
+})
+
+app.factory('AddressFactory', function ($http, $sessionStorage) {
+  function Add (address, category, callback) {
+    $http.post('/api/addresses', {
+      address: address,
+      category: category
+    })
+      .then(function (res) {
+        if (res.status === 201) {
+          callback(res)
+        } else {
+          callback(res)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function getAddress (delegate, address, callback) {
+    if (!address) {
+      $http({
+        url: '/api/addresses',
+        method: 'GET',
+        params: {
+          delegate: delegate
+        }
+      })
+        .then(function (res) {
+          if (res.status === 200) {
+            callback(res.data)
+          } else {
+            callback(res.status)
+          }
+        }).catch(function (e) {
+          callback(e)
+        })
+    } else {
+      $http({
+        url: '/api/addresses',
+        method: 'GET',
+        params: {
+          delegate: delegate,
+          address: address
+        }
+      })
+        .then(function (res) {
+          if (res.status === 200) {
+            callback(res.data)
+          } else {
+            callback(res.status)
+          }
+        }).catch(function (e) {
+          callback(e)
+        })
+    }
+  }
+
+  function Confirm (address, txId, callback) {
+    $http.put('/api/addresses', {
+      address: address,
+      txId: txId
+    })
+      .then(function (res) {
+        // register successful
+        if (res.status === 200) {
+          callback(null, res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function getToSendAddress (callback) {
+    $http({
+      url: '/api/addresses/getToSendAddress',
+      method: 'GET'
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  return {
+    Add,
+    getAddress,
+    Confirm,
+    getToSendAddress
   }
 })

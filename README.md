@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LiskFrance/lisk-transparency-reports/blob/master/LICENSE)
-[![version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/SherlockStd/lisk-transparency-reports/releases)
-[![Dependency Status](https://gemnasium.com/badges/github.com/SherlockStd/lisk-transparency-reports.svg)](https://gemnasium.com/github.com/SherlockStd/lisk-transparency-reports)
+[![version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/LiskFrance/lisk-transparency-reports/releases)
+[![Dependency Status](https://gemnasium.com/badges/github.com/LiskFrance/lisk-transparency-reports.svg)](https://gemnasium.com/github.com/LiskFrance/lisk-transparency-reports)
 
 <img align="right" src="https://cdn.rawgit.com/feross/standard/master/badge.svg">
 
@@ -14,10 +14,35 @@ This automated tool allow Lisk delegates to manage (very) easily their transpare
 - [Lisk Forum Post](https://forum.lisk.io/viewtopic.php?f=25&t=1347)
 
 
+## Planned features for futures releases
+
+#### v0.4.0:
+- Transactions management
+- _RESTFUL API endpoints_
+- _JSDoc (usejsdoc.org)_
+- _Operations logging_
+- _Test routines_
+
+#### v0.5.0:
+- First reports process
+- Email support (only for notifications, no security stuff with the email, too weak)
+- *PUBLIC RELEASE*
+
+#### v0.6.0:
+- Enhanced reports process
+- Reports charts
+- _Interface Design_
+
+#### v0.7.0:
+- _Admin dashboard_
+- _Account deletion (by admin only, and only in case of squatting)_
+- _Operations logging, logging dashboard with analysis_
+
+
 ## Installation
 
 ```bash
-git clone https://github.com/SherlockStd/lisk-transparency-reports.git
+git clone https://github.com/LiskFrance/lisk-transparency-reports.git
 cd lisk-transparency-reports
 npm install
 ```
@@ -38,7 +63,7 @@ npm start
 ## Authors
 
 - Pierre Cavin <sherlock@sherlockstd.io>
-- Remo Bonfante <anamixlisk@libero.it>
+- Tariq Riahi <tariq@lisk-france.fr>
 
 
 ## License
