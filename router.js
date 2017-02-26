@@ -4,6 +4,7 @@ const passportConfig = require('./config/passport')
 
 const AuthHelper = require('./helpers/auth')
 const AddrHelper = require('./helpers/addresses')
+const DelegateHelper = require('./helpers/delegates')
 
 // Middlewares to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
@@ -13,6 +14,7 @@ module.exports = function (app) {
   // Initialize route groups
   const apiRoutes = express.Router()
   const authRoutes = express.Router()
+  const delegatesRoutes = express.Router()
   const addrRoutes = express.Router()
   const index = require('./routes/index')
 
@@ -30,20 +32,25 @@ module.exports = function (app) {
   // Return amount to send
   authRoutes.get('/resetPasswordAmount', AuthHelper.resetPasswordAmount)
 
-  // Get all active delegates from the DB
-  authRoutes.get('/getDelegates', AuthHelper.getAllUsers)
-
-  // Get a particular delegate informations from the lisk API
-  authRoutes.get('/getDelegate', AuthHelper.getUser)
-
-  // Get the forged lisks amount from the lisk API
-  authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
-
   // Init the password reseting process
   authRoutes.post('/initResetPassword', AuthHelper.initResetPassword)
 
   // Reset password
   authRoutes.post('/resetPassword', AuthHelper.resetPassword)
+
+  // ==========================
+  // Delegates Routes
+  // ==========================
+  apiRoutes.use('/delegates', delegatesRoutes)
+
+  // Get all active delegates from the DB
+  delegatesRoutes.get('/getDelegates', DelegateHelper.getDelegates)
+
+  // Get a particular delegate informations from the lisk API
+  delegatesRoutes.get('/getDelegate', DelegateHelper.getUser)
+
+  // Get the forged lisks amount from the lisk API
+  delegatesRoutes.get('/getForged', DelegateHelper.getForged)
 
   // ==========================
   // Addresses Routes
@@ -64,10 +71,6 @@ module.exports = function (app) {
 
   // Get address to send tx
   addrRoutes.get('/getToSendAddress', AddrHelper.getToSendAddress)
-
-  // ==========================
-  // Report Routes
-  // ==========================
 
   // Set url for API group routes
   app.use('/api', apiRoutes)

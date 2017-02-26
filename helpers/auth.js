@@ -104,42 +104,6 @@ const login = function (req, res, next) {
   })
 }
 
-// --------------------
-// Display All delegates
-// --------------------
-
-const getAllUsers = function (req, res, next) {
-  User.find({ confirmed: true }, function (err, users) {
-    if (err) {
-      res.status(500).json({
-        error: 'Bonjour France.'
-      })
-      return next(err)
-    }
-    res.status(200).json({
-      allUsers: users
-    })
-  })
-}
-
-// ---------------------
-// Get user informations
-// ---------------------
-const getUser = function (req, res, next) {
-  let username = req.query.username
-
-  blockchain.getDelegate(username, function (err, delegate) {
-    if (err) {
-      return res.status(422).send({
-        success: false,
-        error: 'This delegate does not exist'
-      })
-    } else {
-      return res.status(200).send(delegate)
-    }
-  })
-}
-
 // ---------------------------
 // Generate a new amount route
 // ---------------------------
@@ -267,24 +231,6 @@ const resetPassword = function (req, res, next) {
   })
 }
 
-// ----------------------
-// Get forged Lisk route
-// ----------------------
-const getForgedLisks = function (req, res, next) {
-  let publicKey = req.query.publicKey
-
-  blockchain.getForgedLisksUser(publicKey, function (err, total) {
-    if (err) {
-      return res.status(422).send({
-        success: false,
-        error: 'This public key does not exist'
-      })
-    } else {
-      return res.status(200).send(total)
-    }
-  })
-}
-
 // --------------------
 // Functions
 // --------------------
@@ -325,10 +271,7 @@ module.exports = {
   login,
   initResetPassword,
   resetPassword,
-  getAllUsers,
-  getUser,
   resetPasswordAmount,
-  getForgedLisks,
   generateToken,
   roleAuthorization
 }
