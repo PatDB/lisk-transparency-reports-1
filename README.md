@@ -1,6 +1,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LiskFrance/lisk-transparency-reports/blob/master/LICENSE)
-[![version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/SherlockStd/lisk-transparency-reports/releases)
-[![Dependency Status](https://gemnasium.com/badges/github.com/SherlockStd/lisk-transparency-reports.svg)](https://gemnasium.com/github.com/SherlockStd/lisk-transparency-reports)
+[![version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/LiskFrance/lisk-transparency-reports/releases)
+[![Dependency Status](https://gemnasium.com/badges/github.com/LiskFrance/lisk-transparency-reports.svg)](https://gemnasium.com/github.com/LiskFrance/lisk-transparency-reports)
 
 <img align="right" src="https://cdn.rawgit.com/feross/standard/master/badge.svg">
 
@@ -16,15 +16,11 @@ This automated tool allow Lisk delegates to manage (very) easily their transpare
 
 ## Planned features for futures releases
 
-#### v0.3.0:
-- Multiples addresses management
-- Profile page (containing only blockchain delegate informations and confirmed addresses atm)
-- Report page (containing only blockchain delegate informations and confirmed addresses atm)
-- Reset password by transaction functionnality
+#### v0.4.0:
+- Transactions management
 - _RESTFUL API endpoints_
 - _JSDoc (usejsdoc.org)_
-
-#### v0.4.0:
+- _Operations logging_
 - _Test routines_
 
 #### v0.5.0:
