@@ -1,57 +1,49 @@
 const mongoose = require('mongoose')
+const mongoosePaginate = require('mongoose-paginate')
 const Schema = mongoose.Schema
-const Usermodel = require('./User.js');
-var ItemUser = mongoose.model('User');
+const Usermodel = require('./User.js')
+//const mongoosePaginate = require('mongoose-paginate')
 
-
-//tytx schema
+//typetx schema
 const typeTxSchema = new Schema({
   typetx: {
     type: String,
     required: true
   },
-  active: {
-    type: boolean,
+  confirmed: {
+    type: Boolean,
     required: true,
-    default: 1
+    default: true
   },
-  order: {
-    type: number,
-    required: true
-  },
+  ordertx: {
+    type: Number
+  }
 })
 
 // Transaction schema
-const Schema = new Schema({
+const TransactionSchema = new Schema({
   address: {
-    type: ObjectId,
-    ref: 'AddressSchema' ,
-    lowercase: true,
+    type: String,
+     lowercase: true,
     required: true
   },
   
   idTx: {
-    type: number,
+    type: Number,
     unique: true,
     required: true
   },
   
-  typeTx: {
-    type: ObjectId,
-    ref: 'typeTxSchema' ,//set default?
-    
-  },
- 
+  typeTx: [typeTxSchema] ,//set default?
+  
   insDate: {
-    type: Date
-    default: Date.now,//date of definition or date of insert?
+    type: Date,
+    default: Date.Now,//date of definition or date of insert?
     required: true
   }
-}, {
+}, 
+{
   timestamps: true
 })
-
-
-
 
 module.exports = mongoose.model('Transaction', TransactionSchema)
