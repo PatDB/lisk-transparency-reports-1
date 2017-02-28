@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const blockchain = require('../helpers/blockchain')
 const User = require('../models/User')
+const Address = require('../models/Address')
 const config = require('../config/main')
 
 // --------------------
@@ -29,7 +30,6 @@ const register = function (req, res, next) {
     delegate: username
   }, function (err, existingUser) {
     if (err) {
-      console.log(err)
       return next(err)
     }
 
@@ -48,20 +48,29 @@ const register = function (req, res, next) {
         })
       }
 
+      let address = new Address({
+        _owner: username,
+        address: delegate.address,
+        category: 'Forge',
+        confirmAmount: (Math.random().toFixed(4) * 100000000).toFixed(0)
+      })
+
       let user = new User({
         delegate: username,
         password: password,
-        addresses: [{
-          address: delegate.address,
-          category: 'Forge',
-          confirmAmount: (Math.random().toFixed(4) * 100000000).toFixed(0)
-        }]
+        addresses: [address]
       })
 
       user.save(function (err, newUser) {
         if (err) {
           return next(err)
         }
+
+        address.save(function (err) {
+          if (err) {
+            return next(err)
+          }
+        })
 
         let userInfo = {
           _id: newUser._id,
@@ -185,7 +194,7 @@ const resetPassword = function (req, res, next) {
   // Get delegate
   User.findOne({
     delegate: delegate
-  }, function (err, foundUser) {
+  }).populate('addresses').exec(function (err, foundUser) {
     if (err) {
       res.status(422).json({
         error: 'No user was found.'

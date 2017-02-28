@@ -8,13 +8,14 @@ const User = require('../models/User')
 const getDelegates = function (req, res, next) {
   User.find({
     confirmed: true
-  }, function (err, users) {
+  }, 'delegate', function (err, users) {
     if (err) {
       res.status(500).json({
         error: 'Bonjour France.'
       })
       return next(err)
     }
+    console.log(users)
     res.status(200).json({
       allUsers: users
     })
