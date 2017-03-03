@@ -23,8 +23,6 @@ const typeTxSchema = new Schema({
 
 })
 
-
-
 // Transaction schema
 const TransactionSchema = new Schema({
   idTx: {
