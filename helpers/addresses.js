@@ -1,4 +1,6 @@
-const user = require('../models/User')
+const jwt = require('jsonwebtoken')
+const User = require('../models/User')
+const Address = require('../models/Address')
 const blockchain = require('./blockchain')
 const config = require('../config/main')
 
@@ -7,10 +9,11 @@ const config = require('../config/main')
 // --------------------
 const get = function (req, res, next) {
   let toReturnAddr = []
+  let delegate = req.query.delegate
 
-  user.findOne({
-    delegate: req.query.delegate
-  }, function (err, delegate) {
+  User.findOne({
+    delegate: delegate
+  }).populate('addresses').exec(function (err, delegate) {
     if (err) {
       return next({
         status: 500,
@@ -23,6 +26,7 @@ const get = function (req, res, next) {
         message: 'Can\'t find this delegate'
       })
     }
+
     if (req.query.address) {
       delegate.addresses.forEach(function (address) {
         if (address.address === req.query.address) {
@@ -40,10 +44,53 @@ const get = function (req, res, next) {
     if (!req.query.address && !req.query.category) {
       toReturnAddr = delegate.addresses
     }
-    res.status(200).json(
-      toReturnAddr
-    )
+
+    if (req.headers.authorization) {
+      let encoded = req.headers.authorization.substr(4)
+      jwt.verify(encoded, config.secret, function (err, decoded) {
+        if (err) {
+          return next({
+            status: 500,
+            message: err
+          })
+        }
+        User.findById(decoded._id, function (err, asker) {
+          if (err) {
+            return next({
+              status: 500,
+              message: err
+            })
+          }
+          if (asker.delegate === delegate.delegate) {
+            res.status(200).json(
+              toReturnAddr
+            )
+          } else {
+            let finalAddr = []
+            toReturnAddr.forEach(function (address) {
+              if (address.confirmed) {
+                finalAddr.push(address)
+              }
+            }, this)
+            res.status(200).json(
+              finalAddr
+            )
+          }
+        })
+      })
+    } else {
+      let finalAddr = []
+      toReturnAddr.forEach(function (address) {
+        if (address.confirmed) {
+          finalAddr.push(address)
+        }
+      }, this)
+      res.status(200).json(
+        finalAddr
+      )
+    }
   })
+  
 }
 
 // --------------------
@@ -54,7 +101,14 @@ const add = function (req, res, next) {
   let category = req.body.category
   let amount = (Math.random().toFixed(4) * 100000000).toFixed(0)
 
-  user.findById(req.user._id, function (err, foundUser) {
+  if (category === 'Forge') {
+    return next({
+      status: 422,
+      message: 'You can\'t add more than one forge address'
+    })
+  }
+
+  User.findById(req.user._id, function (err, foundUser) {
     if (err) {
       return next({
         status: 500,
@@ -66,31 +120,47 @@ const add = function (req, res, next) {
         status: 422,
         message: 'Can\'t find this delegate'
       })
-    } else {
-      foundUser.addresses.push({
-        address: address,
-        category: category,
-        confirmAmount: amount
+    }
+    if (!foundUser.confirmed) {
+      return next({
+        status: 422,
+        message: 'You first need to verify your forge address'
       })
+    }
 
-      foundUser.save(function (err, updatedUser) {
+    let newAddress = new Address({
+      _owner: foundUser.delegate,
+      address: address,
+      category: category,
+      confirmAmount: amount
+    })
+
+    newAddress.save(function (err, savedAddress) {
+      if (err) {
+        return next({
+          status: 500,
+          message: err
+        })
+      }
+      if (!savedAddress) {
+        return next({
+          status: 422,
+          message: 'Error saving user to DB.'
+        })
+      }
+      foundUser.addresses.push(savedAddress)
+      foundUser.save(function (err) {
         if (err) {
           return next({
             status: 500,
             message: err
           })
         }
-        if (!updatedUser) {
-          return next({
-            status: 422,
-            message: 'Error saving user to DB.'
-          })
-        }
         res.status(201).json({
           success: true
         })
       })
-    }
+    })
   })
 }
 
@@ -98,13 +168,12 @@ const add = function (req, res, next) {
 // Confirm address route
 // ---------------------
 const confirm = function (req, res, next) {
-  console.log(req)
   let address, pos
   let txId = req.body.txId
   let addressFound = false
 
   // Get user
-  user.findById(req.user._id, function (err, foundUser) {
+  User.findById(req.user._id).populate('addresses').exec(function (err, foundUser) {
     if (err) {
       return next({
         status: 500,
@@ -155,6 +224,16 @@ const confirm = function (req, res, next) {
                       message: 'Error saving user to DB.'
                     })
                   }
+
+                  foundUser.addresses[pos].save(function (err) {
+                    if (err) {
+                      return next({
+                        status: 500,
+                        message: 'Error saving address to DB.'
+                      })
+                    }
+                  })
+
                   res.status(200).json({
                     address: address.address,
                     confirmed: true
@@ -163,8 +242,7 @@ const confirm = function (req, res, next) {
               } else {
                 res.status(200).json({
                   confirmed: false,
-                  amount: address.confirmAmount,
-                  address: config.address
+                  amount: address.confirmAmount
                 })
               }
             }
@@ -172,8 +250,7 @@ const confirm = function (req, res, next) {
         } else {
           res.status(200).json({
             confirmed: false,
-            amount: address.confirmAmount,
-            address: config.address
+            amount: address.confirmAmount
           })
         }
       } else {
@@ -198,7 +275,7 @@ const remove = function (req, res, next) {
   let removed, forge
 
   // Get user
-  user.findById(req.user._id, function (err, foundUser) {
+  User.findById(req.user._id).populate('addresses').exec(function (err, foundUser) {
     if (err) {
       return next({
         status: 422,
@@ -251,14 +328,14 @@ const remove = function (req, res, next) {
 // -------------------------
 const getToSendAddress = function (req, res, next) {
   res.status(200).json(
-      config.address
-    )
+    config.address
+  )
 }
 
 module.exports = {
-  get,
-  add,
-  confirm,
-  remove,
+  get, // ok
+  add, // ok
+  confirm, // ok
+  remove, // ok
   getToSendAddress
 }

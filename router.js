@@ -4,7 +4,7 @@ const passportConfig = require('./config/passport')
 
 const AuthHelper = require('./helpers/auth')
 const AddrHelper = require('./helpers/addresses')
-
+const TxHelper = require('./helpers/transaction')
 // Middlewares to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
 const requireLogin = passport.authenticate('local', { session: false })
@@ -14,6 +14,7 @@ module.exports = function (app) {
   const apiRoutes = express.Router()
   const authRoutes = express.Router()
   const addrRoutes = express.Router()
+  //const txRoutes = express.Router()
   const index = require('./routes/index')
 
   // ==========================
@@ -69,9 +70,19 @@ module.exports = function (app) {
   addrRoutes.get('/getToSendAddress', AddrHelper.getToSendAddress)
 
   // ==========================
-  // Report Routes
+  // Transactions Routes
   // ==========================
-
+  
+  //apiRoutes.use('/listTX', txRoutes)
+  // save type tx on myreport
+  //txRoutes.post('/defineTX',requireAuth, TxHelper.defineTx)
+  // list Tx by delegate on myreport
+  //txRoutes.get('/TxbyDelegate', requireAuth, TxHelper.TxByDelegate)
+  //list tx on myrepot by user/type
+  //txRoutes.get('/filterTxByType', requireAuth, TxHelper.filterTxByType)
+  //list/filter tx by address on myreport
+  //txRoutes.get('/MyByAddresses', requireAuth, TxHelper.MyByAddresses)
+  
   // Set url for API group routes
   app.use('/api', apiRoutes)
   app.use('/', index)

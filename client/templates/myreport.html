@@ -1,0 +1,37 @@
+<div>
+<h2>{{ delegate.username }} REPORT</h2>
+
+<h3>DELEGATE INFORMATIONS</h3>
+<hr>
+<p>
+    <b>Username</b> : {{ delegate.username }}<br>
+    
+</p>
+<br>
+
+
+<br>
+<h3>MY ADDRESSES</h3>
+<hr>
+<p>
+<div ng-repeat="a in addresses">
+    <b>{{ a.category }} : </b> {{ a.address }}
+    <span ng-if='a.confirmed'>
+        (Confirmed)
+    </span>
+    <span ng-if='!a.confirmed'>
+        (Unconfirmed) 
+    </span>
+</div>
+</p>
+<br>
+<div style="width:100%">
+<div style="width:70%">
+<h3>REPORT</h3>
+<hr>
+</div>
+<div style="width:30%">
+<h4>filter by type </h4>
+
+ </div>
+</div>

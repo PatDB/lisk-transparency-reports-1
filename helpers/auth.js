@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken')
 const blockchain = require('../helpers/blockchain')
-var request = require('request')
-var api = require('../config/main').api
 const User = require('../models/User')
+const Address = require('../models/Address')
 const config = require('../config/main')
 
 // --------------------
@@ -31,7 +30,6 @@ const register = function (req, res, next) {
     delegate: username
   }, function (err, existingUser) {
     if (err) {
-      console.log(err)
       return next(err)
     }
 
@@ -50,20 +48,29 @@ const register = function (req, res, next) {
         })
       }
 
+      let address = new Address({
+        _owner: username,
+        address: delegate.address,
+        category: 'Forge',
+        confirmAmount: (Math.random().toFixed(4) * 100000000).toFixed(0)
+      })
+
       let user = new User({
         delegate: username,
         password: password,
-        addresses: [{
-          address: delegate.address,
-          category: 'Forge',
-          confirmAmount: (Math.random().toFixed(4) * 100000000).toFixed(0)
-        }]
+        addresses: [address]
       })
 
       user.save(function (err, newUser) {
         if (err) {
           return next(err)
         }
+
+        address.save(function (err) {
+          if (err) {
+            return next(err)
+          }
+        })
 
         let userInfo = {
           _id: newUser._id,
@@ -103,71 +110,6 @@ const login = function (req, res, next) {
       token: 'JWT ' + generateToken(userInfo),
       confirmed: foundUser.confirmed
     })
-  })
-}
-
-// --------------------
-// Display All delegates
-// --------------------
-
-const getAllUsers = function (req, res, next) {
-  User.find(function (err, users) {
-    if (err) {
-      res.status(500).json({
-        error: 'Bonjour France.'
-      })
-      return next(err)
-    }
-    res.status(200).json({
-      allUsers: users
-    })
-  })
-}
-
-// ---------------------
-// Get user informations
-// ---------------------
-const getUser = function (req, res, next) {
-  let username = req.query.username
-
-  blockchain.getDelegate(username, function (err, delegate) {
-    if (err) {
-      return res.status(422).send({
-        success: false,
-        error: 'This delegate does not exist'
-      })
-    } else {
-      return res.status(200).send(delegate)
-    }
-  })
-}
-
-// --------------------
-// Amount route
-// --------------------
-const confirmAmount = function (req, res, next) {
-  // Get user
-  User.findById(req.user._id, function (err, foundUser) {
-    if (err) {
-      res.status(422).json({
-        error: 'No user was found.'
-      })
-      return next(err)
-    }
-    // If user isn't confirmed
-    if (!foundUser.confirmed) {
-      // If userAmount was already generated
-      // res the amount to send stored in DB
-      res.status(200).json({
-        confirmed: false,
-        amount: foundUser.confirmAmount,
-        address: config.address
-      })
-    } else {
-      res.status(200).json({
-        confirmed: true
-      })
-    }
   })
 }
 
@@ -229,9 +171,7 @@ const initResetPassword = function (req, res, next) {
         error: 'User not found'
       })
     }
-    /* NOW HAVE TO UPDATE THE AMOUNT THAT HAS TO BE VERIFIED */
-    // save the bear
-    foundUser.confirmAmount = amount
+    foundUser.resetPasswordAmount = amount
     foundUser.save(function (err, newUser) {
       if (err) {
         return next(err)
@@ -240,8 +180,6 @@ const initResetPassword = function (req, res, next) {
         success: true
       })
     })
-
-    /* THEN REDIRECT TO THE RESETPASSWORD PAGE */
   })
 }
 
@@ -256,7 +194,7 @@ const resetPassword = function (req, res, next) {
   // Get delegate
   User.findOne({
     delegate: delegate
-  }, function (err, foundUser) {
+  }).populate('addresses').exec(function (err, foundUser) {
     if (err) {
       res.status(422).json({
         error: 'No user was found.'
@@ -267,7 +205,7 @@ const resetPassword = function (req, res, next) {
     // If userAmount was already generated
     if (foundUser.resetPasswordAmount) {
       // Check tx in blockchain
-      blockchain.checkConfirmation(foundUser.profile.forge, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
+      blockchain.checkConfirmation(foundUser.addresses[0].address, config.address, txId, foundUser.resetPasswordAmount, function (err, confirmed) {
         if (err) {
           res.status(500).json({
             error: 'An error occured trying to verify tx.'
@@ -277,6 +215,7 @@ const resetPassword = function (req, res, next) {
           // If tx received
           if (confirmed) {
             foundUser.password = password
+            foundUser.resetPasswordAmount = undefined
             foundUser.save(function (err, newUser) {
               if (err) {
                 return next(err)
@@ -297,24 +236,6 @@ const resetPassword = function (req, res, next) {
       res.status(200).json({
         error: 'You first need to generate amount. See the API docs for more informations.'
       })
-    }
-  })
-}
-
-// ----------------------
-// Get forged Lisk route
-// ----------------------
-const getForgedLisks = function (req, res, next) {
-  let publicKey = req.query.publicKey
-
-  blockchain.getForgedLisksUser(publicKey, function (err, total) {
-    if (err) {
-      return res.status(422).send({
-        success: false,
-        error: 'This public key does not exist'
-      })
-    } else {
-      return res.status(200).send(total)
     }
   })
 }
@@ -359,11 +280,7 @@ module.exports = {
   login,
   initResetPassword,
   resetPassword,
-  getAllUsers,
-  getUser,
-  confirmAmount,
   resetPasswordAmount,
-  getForgedLisks,
   generateToken,
   roleAuthorization
 }
