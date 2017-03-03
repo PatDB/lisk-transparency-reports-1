@@ -1,16 +1,16 @@
 app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider
   .when('/', {
-    templateUrl: 'templates/index.html',
-    controller: 'IndexCtrl'
+    templateUrl: 'templates/home.html',
+    controller: 'HomeCtrl'
   })
   .when('/auth', {
     templateUrl: 'templates/auth.html',
     controller: 'AuthCtrl'
   })
-  .when('/verify', {
-    templateUrl: 'templates/verify.html',
-    controller: 'VerifyCtrl'
+  .when('/addresses', {
+    templateUrl: 'templates/addresses.html',
+    controller: 'AddressesCtrl'
   })
   .when('/delegates', {
     templateUrl: 'templates/delegates.html',

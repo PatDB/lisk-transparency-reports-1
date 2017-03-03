@@ -1,4 +1,4 @@
-app.factory('AuthFactory', function ($http, $sessionStorage) {
+app.factory('AuthFactory', function ($http, $sessionStorage, $rootScope) {
   function Login (delegate, password, callback) {
     $http.post('/api/auth/login', {
       delegate: delegate.toLowerCase(),
@@ -13,10 +13,13 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
           // store username and token in local storage to keep user logged in between page refreshes
           $sessionStorage.currentUser = {
             delegate: delegate,
+            confirmed: res.data.confirmed,
             token: res.data.token
           }
 
           $http.defaults.headers.common.Authorization = res.data.token
+
+          $rootScope.connected = true
         } else {
           // execute callback to indicate failed login
           callback(res)
@@ -32,19 +35,7 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       password: password
     })
       .then(function (res) {
-        // register successful
-        if (res.status === 201) {
-          callback(res.status)
-
-          $sessionStorage.currentUser = {
-            delegate: delegate,
-            token: res.data.token
-          }
-
-          $http.defaults.headers.common.Authorization = res.data.token
-        } else {
-          callback(res)
-        }
+        callback(res.status)
       }).catch(function (e) {
         callback(e)
       })
@@ -55,7 +46,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       delegate: delegate.toLowerCase()
     })
       .then(function (res) {
-        console.log(res)
         if (res.status === 201 && res.data.success === true) {
           callback(true)
         } else {
@@ -73,7 +63,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
       password: password
     })
       .then(function (res) {
-        console.log(res)
         if (res.status === 200) {
           callback(null, true)
         } else {
@@ -81,60 +70,6 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
         }
       }).catch(function (err) {
         callback(err)
-      })
-  }
-
-  /* Function to get all delegates names from DB */
-  function displayAll (callback) {
-    $http.get('/api/auth/getDelegates')
-      .then(function (res) {
-        if (res.status === 200) {
-          callback(res.data.allUsers)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
-  /* Function that'll extract all informations of a delegate from
-  the Lisk API */
-  function getUserh (username, callback) {
-    $http({
-      url: '/api/auth/getDelegate',
-      method: 'GET',
-      params: {
-        username: username
-      }
-    })
-      .then(function (res) {
-        if (res.status === 200) {
-          callback(res.data)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
-      })
-  }
-
-  function getTotalLisksForgedForUser (publicKey, callback) {
-    $http({
-      url: '/api/auth/getForgedLisks',
-      method: 'GET',
-      params: {
-        publicKey: publicKey
-      }
-    })
-      .then(function (res) {
-        if (res.status === 200) {
-          callback(res.data)
-        } else {
-          callback(res.status)
-        }
-      }).catch(function (e) {
-        callback(e)
       })
   }
 
@@ -174,12 +109,70 @@ app.factory('AuthFactory', function ($http, $sessionStorage) {
     Login,
     initResetPassword,
     resetPassword,
-    displayAll,
-    getUserh,
-    getTotalLisksForgedForUser,
     resetPasswordAmount,
     Logout,
     Token
+  }
+})
+
+app.factory('DelegateFactory', function ($http, $sessionStorage, $rootScope) {
+  // Function to get all delegates names from DB
+  function getDelegates (callback) {
+    $http.get('/api/delegates/getDelegates')
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data.allUsers)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  // Function that'll extract all informations of a delegate from the Lisk API
+  function getDelegate (username, callback) {
+    $http({
+      url: '/api/delegates/getDelegate',
+      method: 'GET',
+      params: {
+        username: username
+      }
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  function getForged (publicKey, callback) {
+    $http({
+      url: '/api/delegates/getForged',
+      method: 'GET',
+      params: {
+        publicKey: publicKey
+      }
+    })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
+  }
+
+  return {
+    getDelegates,
+    getDelegate,
+    getForged
   }
 })
 
@@ -190,7 +183,6 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
       category: category
     })
       .then(function (res) {
-        console.log(res)
         if (res.status === 201) {
           callback(res)
         } else {
@@ -246,7 +238,6 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
       txId: txId
     })
       .then(function (res) {
-        console.log(res)
         // register successful
         if (res.status === 200) {
           callback(null, res.data)
@@ -255,7 +246,6 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
         }
       }).catch(function (e) {
         callback(e)
-        console.log(e)
       })
   }
 
@@ -264,15 +254,15 @@ app.factory('AddressFactory', function ($http, $sessionStorage) {
       url: '/api/addresses/getToSendAddress',
       method: 'GET'
     })
-        .then(function (res) {
-          if (res.status === 200) {
-            callback(res.data)
-          } else {
-            callback(res.status)
-          }
-        }).catch(function (e) {
-          callback(e)
-        })
+      .then(function (res) {
+        if (res.status === 200) {
+          callback(res.data)
+        } else {
+          callback(res.status)
+        }
+      }).catch(function (e) {
+        callback(e)
+      })
   }
 
   return {

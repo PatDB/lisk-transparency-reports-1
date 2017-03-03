@@ -4,7 +4,8 @@ const passportConfig = require('./config/passport')
 
 const AuthHelper = require('./helpers/auth')
 const AddrHelper = require('./helpers/addresses')
-const TxHelper = require('./helpers/transaction')
+const DelegateHelper = require('./helpers/delegates')
+
 // Middlewares to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
 const requireLogin = passport.authenticate('local', { session: false })
@@ -13,8 +14,8 @@ module.exports = function (app) {
   // Initialize route groups
   const apiRoutes = express.Router()
   const authRoutes = express.Router()
+  const delegatesRoutes = express.Router()
   const addrRoutes = express.Router()
-  //const txRoutes = express.Router()
   const index = require('./routes/index')
 
   // ==========================
@@ -28,26 +29,28 @@ module.exports = function (app) {
   // Login route
   authRoutes.post('/login', requireLogin, AuthHelper.login)
 
-  // Generate / return aleatory amount to send route
-  authRoutes.get('/amount', requireAuth, AuthHelper.confirmAmount)
-
   // Return amount to send
   authRoutes.get('/resetPasswordAmount', AuthHelper.resetPasswordAmount)
-
-  // Get all active delegates from the DB
-  authRoutes.get('/getDelegates', AuthHelper.getAllUsers)
-
-  // Get a particular delegate informations from the lisk API
-  authRoutes.get('/getDelegate', AuthHelper.getUser)
-
-  // Get the forged lisks amount from the lisk API
-  authRoutes.get('/getForgedLisks', AuthHelper.getForgedLisks)
 
   // Init the password reseting process
   authRoutes.post('/initResetPassword', AuthHelper.initResetPassword)
 
   // Reset password
   authRoutes.post('/resetPassword', AuthHelper.resetPassword)
+
+  // ==========================
+  // Delegates Routes
+  // ==========================
+  apiRoutes.use('/delegates', delegatesRoutes)
+
+  // Get all active delegates from the DB
+  delegatesRoutes.get('/getDelegates', DelegateHelper.getDelegates)
+
+  // Get a particular delegate informations from the lisk API
+  delegatesRoutes.get('/getDelegate', DelegateHelper.getUser)
+
+  // Get the forged lisks amount from the lisk API
+  delegatesRoutes.get('/getForged', DelegateHelper.getForged)
 
   // ==========================
   // Addresses Routes
@@ -69,20 +72,6 @@ module.exports = function (app) {
   // Get address to send tx
   addrRoutes.get('/getToSendAddress', AddrHelper.getToSendAddress)
 
-  // ==========================
-  // Transactions Routes
-  // ==========================
-  
-  //apiRoutes.use('/listTX', txRoutes)
-  // save type tx on myreport
-  //txRoutes.post('/defineTX',requireAuth, TxHelper.defineTx)
-  // list Tx by delegate on myreport
-  //txRoutes.get('/TxbyDelegate', requireAuth, TxHelper.TxByDelegate)
-  //list tx on myrepot by user/type
-  //txRoutes.get('/filterTxByType', requireAuth, TxHelper.filterTxByType)
-  //list/filter tx by address on myreport
-  //txRoutes.get('/MyByAddresses', requireAuth, TxHelper.MyByAddresses)
-  
   // Set url for API group routes
   app.use('/api', apiRoutes)
   app.use('/', index)

@@ -4,8 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] - 2017-02-26
+### Added
+- Multiples addresses management
+- Profile page (containing only blockchain delegate informations and confirmed addresses atm)
+- Report page (containing only blockchain delegate informations and confirmed addresses atm)
+- Reset password by transaction functionnality
 
-## [Unreleased]
+### Changed
+- Delegate Mongoose model
 
 ## [0.2.0] - 2017-02-01
 ### Added
@@ -19,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Authentication API with confirmation by sending a little transaction
 - This CHANGELOG file to hopefully serve as an evolving example of a standardized open source project CHANGELOG.
 
-[Unreleased]: https://github.com/SherlockStd/lisk-transparency-reports/compare/v0.2.0...development
-[0.2.0]: https://github.com/SherlockStd/lisk-transparency-reports/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/SherlockStd/lisk-transparency-reports/tree/v0.1.0
+[Unreleased]: https://github.com/LiskFrance/lisk-transparency-reports/compare/v0.2.0...development
+[0.3.0]: https://github.com/LiskFrance/lisk-transparency-reports/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/LiskFrance/lisk-transparency-reports/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/LiskFrance/lisk-transparency-reports/tree/v0.1.0
