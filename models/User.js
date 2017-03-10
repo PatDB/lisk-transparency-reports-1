@@ -2,25 +2,6 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const bcrypt = require('bcrypt')
 
-const AddressSchema = new Schema({
-  address: {
-    type: String,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true,
-    enum: ['Forge', 'Holding', 'Donations', 'Personal', 'Servers', 'Unknown', 'Marketing']
-  },
-  confirmed: {
-    type: Boolean,
-    default: false
-  },
-  confirmAmount: {
-    type: Number
-  }
-})
-
 // User schema
 const UserSchema = new Schema({
   delegate: {
@@ -33,7 +14,7 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  addresses: [AddressSchema],
+  addresses: [{ type: Schema.Types.ObjectId, ref: 'Address' }],
   role: {
     type: String,
     enum: ['Delegate', 'Admin'],
