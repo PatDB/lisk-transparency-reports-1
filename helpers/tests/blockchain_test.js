@@ -4,6 +4,16 @@ let delegate = 'sherlockstd'
 let from = '9120485202270553493L'
 let to = '7023069056644097238L'
 let address = config.address
+let limit = 150
+
+blockchain.getOutTxs(from, limit, function (err, data) {
+  console.log('\ngetOutTxs() : \n')
+  if (err) {
+    console.log(err)
+  } else {
+    console.log(data)
+  }
+})
 
 blockchain.getTxsFromTo(from, to, function (err, data) {
   console.log('\ngetTxsFromTo() : \n')

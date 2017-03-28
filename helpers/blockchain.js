@@ -68,11 +68,15 @@ var getDelegate = function (username, callback) {
  * @param    {String} senderId
  * @callback {Array}
  */
-var getOutTxs = function (senderId, callback) {
+var getOutTxs = function (senderId, limit, callback) {
+  if (limit>1000){
+      limit = 1000
+  }
+  
   var data = {
     senderId: senderId,
     orderBy: 'timestamp:desc',
-    limit: 100
+    limit: limit
   }
 
   request.get({
@@ -95,15 +99,14 @@ var getOutTxs = function (senderId, callback) {
 /**
  * Return transactions from one address to another [{id, amount}]
  *
- * @param    {String} senderId
- * @param    {String} recipientId
- * @callback {Array}
+ * 
+ * 
  */
 var getTxsFromTo = function (senderId, recipientId, callback) {
   var result = []
-
-  getOutTxs(senderId, function (err, data) {
-    if (err) {
+  var limit = 100
+  getOutTxs(senderId, limit ,function (err, data) {
+         if (err) {
       callback(err)
     } else {
       data.forEach(function (tx) {
@@ -179,7 +182,7 @@ var getTxsAmount = function (transactions, callback) {
  * @callback {Number}
  */
 var getAmountFromTo = function (senderId, recipientId, callback) {
-  getTxsFromTo(senderId, recipientId, function (err, data) {
+    getTxsFromTo(senderId, recipientId, function (err, data) {
     if (err) {
       callback(err)
     } else {
@@ -245,6 +248,7 @@ var getForged = function (generatorPublicKey, callback) {
 
 module.exports = {
   getAccount,
+  getOutTxs,
   getTxsFromTo,
   getAmountFromTo,
   getBalance,
